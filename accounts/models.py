@@ -47,7 +47,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.phone_number
+        profile = self.profile
+        return f'{self.phone_number} ({profile.name} {profile.last_name})'
 
     class Meta:
         verbose_name = "USER"
@@ -80,6 +81,7 @@ class ProfileUser(models.Model):
     class Meta:
         verbose_name = "ProfileUser"
         verbose_name_plural = "ProfileUser"
+        ordering = ("-created_at",)
         constraints = [
             models.UniqueConstraint(
                 fields=['id_code'],
@@ -89,7 +91,7 @@ class ProfileUser(models.Model):
         ]
 
     def __str__(self):
-        return self.user.phone_number
+        return f'{self.name} {self.last_name}'
 
 
 class OTP(models.Model):
