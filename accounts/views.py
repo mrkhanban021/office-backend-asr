@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiResponse
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
@@ -13,6 +14,19 @@ from worklog.signals import user_logged_in_signal
 class SendOtp(APIView):
     permission_classes = (AllowAny,)
 
+    @extend_schema(
+     request= PhoneNumberSerializers,
+     responses={200: None},
+     description= "به شماره موبایل کاربر (اگر ثبتنام نکرده باشد ثبتنام میشود) در غیر اینصورت otp ارسال میشود",
+     examples=[
+         OpenApiExample(
+             "مثال موفق",
+             value={"phone_number": "09123456789"},
+             request_only=True
+
+         )
+     ]
+    )
     def post(self, request):
         serializers = PhoneNumberSerializers(data=request.data)
         if serializers.is_valid():
@@ -30,6 +44,37 @@ class SendOtp(APIView):
 class VerifyOTPView(APIView):
     permission_classes = (AllowAny,)
 
+    @extend_schema(
+        request=VerifyOTPSerializers,
+        responses={
+            200: OpenApiResponse(
+                description="درخواست موفقیت آمیز است، توکن‌ها ارسال می‌شوند",
+                examples=[
+                    OpenApiExample(
+                        "موفقیت",
+                        value={
+                            "refresh": "your_refresh_token_here",
+                            "access": "your_access_token_here"
+                        }
+                    )
+                ]
+            ),
+            400: OpenApiResponse(
+                description="درخواست نامعتبر است (به عنوان مثال کد OTP اشتباه است)"
+            )
+        },
+        description="وقتی کد یک بار مصرف ارسال بشه واردش کنی اینجا بهت یک توکن برای احراز هویت میده",
+        examples=[
+            OpenApiExample(
+                "نمونه درخواست",
+                value={
+                    "phone_number": "09123456789",  # شماره موبایل کاربر
+                    "otp": "123456"  # کد OTP وارد شده توسط کاربر
+                },
+                request_only=True
+            )
+        ]
+    )
     def post(self, request):
         serializers = VerifyOTPSerializers(data=request.data)
         print(request.data)

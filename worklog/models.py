@@ -38,10 +38,9 @@ class Department(models.Model):
         return self.title
 
 
-
 def avatar_upload_path(instance, filename):
     folder_name = slugify(f"{instance.first_name} {instance.last_name}")
-    return os.path.join('employee',folder_name, filename)
+    return os.path.join('employee', folder_name, filename)
 
 
 class Employee(models.Model):

@@ -34,8 +34,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'drf_spectacular',
+    'django_jalali',
     'accounts.apps.AccountsConfig',
     'worklog.apps.WorklogConfig',
+    'human_resources.apps.HumanResourcesConfig',
+
 
 
 ]
@@ -78,7 +82,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 
@@ -150,4 +155,11 @@ SIMPLE_JWT = {
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
     "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'backend api for asr',
+    'DESCRIPTION': 'نرم افزار ورد و خروج asr',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
