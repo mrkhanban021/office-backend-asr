@@ -1,5 +1,5 @@
 import os.path
-
+from django_jalali.db import models as jmodels
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -38,9 +38,22 @@ class Department(models.Model):
         return self.title
 
 
-def avatar_upload_path(instance, filename):
+def employee_upload_path(instance, filename, filetype):
     folder_name = slugify(f"{instance.first_name} {instance.last_name}")
-    return os.path.join('employee', folder_name, filename)
+    ext = os.path.splitext(filename)[1]  # مثل .jpg یا .png
+    return os.path.join("employee", folder_name, f"{filetype}{ext}")
+
+
+def avatar_upload_path(instance, filename):
+    return employee_upload_path(instance, filename, "avatar")
+
+
+def signature_upload_path(instance, filename):
+    return employee_upload_path(instance, filename, "signature")
+
+
+def fingerprint_upload_path(instance, filename):
+    return employee_upload_path(instance, filename, "fingerprint")
 
 
 class Employee(models.Model):
@@ -49,13 +62,15 @@ class Employee(models.Model):
     last_name = models.CharField(max_length=100, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
-    hire_date = models.DateField(default=timezone.now,)
+    hire_date = jmodels.jDateField(null=True, blank=True)
     position = models.CharField(max_length=100)
     avatar = models.ImageField(upload_to=avatar_upload_path, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
-    date_of_birth = models.DateField(null=True, blank=True)
+    date_of_birth = jmodels.jDateField(null=True, blank=True)
     employee_id = models.CharField(max_length=20, unique=True)
+    signature_image = models.ImageField(upload_to=signature_upload_path, null=True, blank=True)
+    fingerprint_image = models.ImageField(upload_to=fingerprint_upload_path, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True)

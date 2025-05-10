@@ -65,7 +65,7 @@ def validate_national_code(value):
 
 
 def avatar_upload_to(instance, filename):
-    return os.path.join('avatars', f'user_{instance.id}', filename)
+    return os.path.join('avatars', f'{instance.name} {instance.last_name}', filename)
 
 
 class ProfileUser(models.Model):

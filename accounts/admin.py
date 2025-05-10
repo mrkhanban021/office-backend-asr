@@ -12,6 +12,7 @@ class OTPRequestAdmin(admin.ModelAdmin):
     search_fields = ("id", 'otp')
     ordering = ('request_time',)
     list_display_links = ("id", 'otp')
+    list_per_page = 13
 
 
 @admin.register(ProfileUser)
@@ -20,6 +21,7 @@ class ProfileUserAdmin(admin.ModelAdmin):
     search_fields = ("id", 'user', 'name', 'last_name','id_code')
     ordering = ('created_at',)
     list_display_links = ("id", 'user', 'name', 'last_name','id_code', 'created_at')
+    list_per_page = 13
 
 
 class ProfileInline(admin.StackedInline):
@@ -36,6 +38,7 @@ class CustomUserAdmin(BaseUserAdmin):
     ordering = ('phone_number',)
     inlines = (ProfileInline,)
     list_display_links = ("id", 'phone_number')
+    list_per_page = 13
 
     fieldsets = (
         (None, {'fields': ('phone_number', 'password')}),

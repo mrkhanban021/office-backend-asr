@@ -20,7 +20,7 @@ class SimpleUserSerializer(serializers.ModelSerializer):
 class ToolCategorySerializers(serializers.ModelSerializer):
     class Meta:
         model = ToolCategory
-        fields = ("id", "title")
+        exclude = ["created_at", "updated_at"]
 
 
 class DepartmentSerializers(serializers.ModelSerializer):
