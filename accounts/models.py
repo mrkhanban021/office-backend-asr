@@ -36,7 +36,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         USER = 'user', 'User'
 
     phone_number = models.CharField(max_length=15, unique=True)
-    role = models.CharField(max_length=20, null=True, blank=True, choices=RoleChoices.choices)
+    role = models.CharField(max_length=20, null=True, blank=True, choices=RoleChoices.choices, default=RoleChoices.USER)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)

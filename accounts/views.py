@@ -9,6 +9,11 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 from worklog.signals import user_logged_in_signal
+from .webonesms.config import send_otp_message
+
+
+
+
 
 
 class SendOtp(APIView):
@@ -36,7 +41,8 @@ class SendOtp(APIView):
             if existing_otp and not existing_otp.is_expired():
                 return Response({"detail": "Previous OTP code is still valid."}, status=status.HTTP_400_BAD_REQUEST)
             otp = OTP.objects.create(user=user)
-            print(f'sent otp {otp.code} to {phone}')
+            print(f'{phone} - {otp.code}')
+            # send_otp_message(phone, otp.code)
             return Response({'detail': 'otp send'}, status=status.HTTP_200_OK)
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -77,7 +83,6 @@ class VerifyOTPView(APIView):
     )
     def post(self, request):
         serializers = VerifyOTPSerializers(data=request.data)
-        print(request.data)
         if serializers.is_valid():
             user = serializers.validated_data['user']
             refresh = RefreshToken.for_user(user)
@@ -86,7 +91,13 @@ class VerifyOTPView(APIView):
             user_logged_in_signal.send(sender=user.__class__, user=user, request=request)
             return Response({
                 "refresh": str(refresh),
-                "access": str(refresh.access_token)
+                "access": str(refresh.access_token),
+                "user": {
+                    "id": user.id,
+                    "phone_number": user.phone_number,
+                    "role": user.role,
+                    "full_name": f"{user.profile.name} {user.profile.last_name}"
+                }
             }, status=status.HTTP_200_OK)
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
