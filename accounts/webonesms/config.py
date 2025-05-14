@@ -5,7 +5,11 @@ BASE_URL = "http://api.payamakapi.ir/api/v1/SMS/SmartOTP"
 
 
 def send_otp_message(number, code):
-    # message = f"کاربر گرامی کد زیر برای ورود به پنل کاربری می‌باشد.\nرمز ورود شما : {code}\nasr-elevator.ir"
+    message_template = f"""
+    کاربر گرامی کد زیر برای ورد به پنل کاربری می‌باشد.svsv
+    رمز ورود شما : {code}
+    asr-elevator.ir
+    """
     headers = {
         "x-api-key": API_KEY,
         "Content-Type": "application/json"
@@ -14,11 +18,10 @@ def send_otp_message(number, code):
 
     payload = {
         "ToNumber": number,
-        "Content": f"رمز یک بار مصرف شما:{code} مدت اعتبار  {time} asr-elevator.ir"
+        "Content": message_template,
     }
 
     request = requests.post(BASE_URL, headers=headers, json=payload)
-    print(request.status_code)
-    print(request.json())
+    return request.json()
 
 

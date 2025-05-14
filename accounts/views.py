@@ -12,25 +12,21 @@ from worklog.signals import user_logged_in_signal
 from .webonesms.config import send_otp_message
 
 
-
-
-
-
 class SendOtp(APIView):
     permission_classes = (AllowAny,)
 
     @extend_schema(
-     request= PhoneNumberSerializers,
-     responses={200: None},
-     description= "به شماره موبایل کاربر (اگر ثبتنام نکرده باشد ثبتنام میشود) در غیر اینصورت otp ارسال میشود",
-     examples=[
-         OpenApiExample(
-             "مثال موفق",
-             value={"phone_number": "09123456789"},
-             request_only=True
+        request=PhoneNumberSerializers,
+        responses={200: None},
+        description="به شماره موبایل کاربر (اگر ثبتنام نکرده باشد ثبتنام میشود) در غیر اینصورت otp ارسال میشود",
+        examples=[
+            OpenApiExample(
+                "مثال موفق",
+                value={"phone_number": "09123456789"},
+                request_only=True
 
-         )
-     ]
+            )
+        ]
     )
     def post(self, request):
         serializers = PhoneNumberSerializers(data=request.data)
@@ -42,7 +38,9 @@ class SendOtp(APIView):
                 return Response({"detail": "Previous OTP code is still valid."}, status=status.HTTP_400_BAD_REQUEST)
             otp = OTP.objects.create(user=user)
             print(f'{phone} - {otp.code}')
-            # send_otp_message(phone, otp.code)
+            sent = send_otp_message(phone, otp.code)
+            if sent.get("succeeded") == False:
+                return Response({"detail": "call system administrator"}, status=status.HTTP_400_BAD_REQUEST)
             return Response({'detail': 'otp send'}, status=status.HTTP_200_OK)
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
