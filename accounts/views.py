@@ -1,10 +1,10 @@
 from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiResponse
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import CustomUser, OTP, ProfileUser
-from .serializers import PhoneNumberSerializers, VerifyOTPSerializers, CustomUserSerializer, OTPSerializer
+from .serializers import PhoneNumberSerializers, VerifyOTPSerializers, CustomUserSerializer, OTPSerializer, ProfileUserSerializer
 from rest_framework.permissions import AllowAny, IsAdminUser
 from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -38,9 +38,9 @@ class SendOtp(APIView):
                 return Response({"detail": "Previous OTP code is still valid."}, status=status.HTTP_400_BAD_REQUEST)
             otp = OTP.objects.create(user=user)
             print(f'{phone} - {otp.code}')
-            sent = send_otp_message(phone, otp.code)
-            if sent.get("succeeded") == False:
-                return Response({"detail": "call system administrator"}, status=status.HTTP_400_BAD_REQUEST)
+            # # sent = send_otp_message(phone, otp.code)
+            # if sent.get("succeeded") == False:
+            #     return Response({"detail": "call system administrator"}, status=status.HTTP_400_BAD_REQUEST)
             return Response({'detail': 'otp send'}, status=status.HTTP_200_OK)
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -103,16 +103,25 @@ class VerifyOTPView(APIView):
 class ListUserApi(ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = (IsAdminUser,)
+    permission_classes = (AllowAny,)
 
 
-class ListUserApiDetails(RetrieveAPIView):
+class ListUserApiDetails(RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = (IsAdminUser,)
+    permission_classes = (AllowAny,)
 
 
 class ListOTPApiDetails(ListAPIView):
     queryset = OTP.objects.all()
     serializer_class = OTPSerializer
     permission_classes = (IsAdminUser,)
+
+
+class ProfileDetail(RetrieveUpdateAPIView):
+    serializer_class = ProfileUserSerializer
+
+    def get_object(self):
+        return ProfileUser.objects.get(user=self.request.user)
+
+

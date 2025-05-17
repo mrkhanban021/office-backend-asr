@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import OTP, CustomUser, ProfileUser, OTPRequest
-from django.utils import timezone
+from django_jalali.serializers.serializerfield import JDateField, JDateTimeField
 
 
 class PhoneNumberSerializers(serializers.Serializer):
@@ -37,6 +37,7 @@ class VerifyOTPSerializers(serializers.Serializer):
 
 
 class ProfileUserSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ProfileUser
         fields = ['id', 'name', 'last_name', 'id_code', 'address', 'avatar', 'created_at', 'updated_at']
@@ -53,7 +54,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'phone_number', 'is_active', 'is_staff', 'is_superuser', 'last_login', 'profile']
+        fields = ['id', 'phone_number', 'role', 'is_active', 'is_staff', 'is_superuser', 'last_login', 'profile']
 
 
 class OTPRequestSerializer(serializers.ModelSerializer):

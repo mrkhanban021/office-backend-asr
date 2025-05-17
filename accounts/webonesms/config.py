@@ -6,7 +6,7 @@ BASE_URL = "http://api.payamakapi.ir/api/v1/SMS/SmartOTP"
 
 def send_otp_message(number, code):
     message_template = f"""
-    کاربر گرامی کد زیر برای ورد به پنل کاربری می‌باشد.svsv
+    کاربر گرامی کد زیر برای ورد به پنل کاربری می‌باشد.
     رمز ورود شما : {code}
     asr-elevator.ir
     """
