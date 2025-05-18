@@ -27,7 +27,7 @@ class Department(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True, unique=True)
     is_active = models.BooleanField(default=True,)
     created_time = models.DateTimeField(auto_now_add=True,)
-    created_by = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         verbose_name = "Department"
@@ -73,7 +73,7 @@ class Employee(models.Model):
     fingerprint_image = models.ImageField(upload_to=fingerprint_upload_path, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(USER, on_delete=models.CASCADE, null=True)
 
     class Meta:
         verbose_name = "Employee"
@@ -88,7 +88,7 @@ class ToolCategory(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True, verbose_name="toolCategory")
+    user = models.ForeignKey(USER, on_delete=models.CASCADE, null=True, verbose_name="toolCategory")
 
     class Meta:
         verbose_name = "ToolCategory"
@@ -107,7 +107,7 @@ class Tools(models.Model):
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(USER, on_delete=models.CASCADE, null=True)
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="department_tools")
 
     class Meta:
@@ -126,7 +126,7 @@ class ToolTransferLog(models.Model):
     taken_at = models.DateTimeField(default=timezone.now)
     returned_at = models.DateTimeField(null=True, blank=True)
 
-    registering_user = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(USER, on_delete=models.CASCADE, null=True)
 
     notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -151,7 +151,7 @@ class EntryExitLog(models.Model):
     entry_time = models.DateTimeField(null=True, blank=True)
 
     reason = models.TextField(null=True, blank=True)
-    approved_by = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(USER, on_delete=models.CASCADE, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -186,8 +186,8 @@ class PeopleCategory(models.Model):
 
 
 class ExternalPerson(models.Model):
-    category = models.ForeignKey(PeopleCategory, on_delete=models.SET_NULL, null=True, blank=True)
-    register_user = models.ForeignKey(USER, on_delete=models.CASCADE, null=True)
+    category = models.ForeignKey(PeopleCategory, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(USER, on_delete=models.CASCADE, null=True)
     full_name = models.CharField(max_length=100, null=True, blank=True)
     national_code = models.CharField(max_length=10, blank=True, null=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)

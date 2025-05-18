@@ -3,14 +3,14 @@ from .models import LogingLog, Department, Employee, ToolCategory, Tools, ToolTr
 
 
 class DepartmentAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "is_active", "created_time", "created_by")
-    list_display_links = ("id", "title", "created_by")
+    list_display = ("id", "title", "is_active", "created_time", "user")
+    list_display_links = ("id", "title", "user")
     list_editable = ("is_active",)
     search_fields = ("title",)
     readonly_fields = ("created_time",)
     fieldsets = (
         ("information", {
-            "fields": ("title", "is_active", "created_time", "created_by")
+            "fields": ("title", "is_active", "created_time", "user")
         }),
     )
 
@@ -34,19 +34,19 @@ class EmployeeAdmin(admin.ModelAdmin):
             "fields": ("first_name", "last_name", "address", "date_of_birth", "phone_number", "email", "signature_image", "fingerprint_image")
         }),
         ("Job information", {
-            "fields": ("department", "hire_date", "position", "employee_id", "created_at", "updated_at", "created_by")
+            "fields": ("department", "hire_date", "position", "employee_id", "created_at", "updated_at", "user")
         }),
     )
 
 
 class ToolCategoryAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "updated_at", "created_by")
-    list_display_links = ("title", "created_by")
+    list_display = ("id", "title", "updated_at", "user")
+    list_display_links = ("title", "user")
     readonly_fields = ("created_at", "updated_at")
     list_per_page = 13
     fieldsets = (
         ("information", {
-            "fields": ("title", "updated_at", "created_at", "created_by")
+            "fields": ("title", "updated_at", "created_at", "user")
         }),
     )
 
@@ -58,36 +58,36 @@ class ToolsAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ("information", {
-            "fields": ("ToolCategory", "title", "seria_number", "counting", "description", "created_at", "updated_at", "created_by",
+            "fields": ("ToolCategory", "title", "seria_number", "counting", "description", "created_at", "updated_at", "user",
                        "department")
         }),
     )
 
 
 class ToolTransferLogAdmin(admin.ModelAdmin):
-    list_display = ("id", "employee", "tool", "taken_at", "registering_user", "returned_at")
-    list_display_links = ("id", "employee", "tool", "taken_at", "registering_user", "returned_at")
-    list_filter = ("employee", "tool", "registering_user")
-    search_fields = ("employee", "tool", "taken_at", "registering_user", "returned_at")
+    list_display = ("id", "employee", "tool", "taken_at", "user", "returned_at")
+    list_display_links = ("id", "employee", "tool", "taken_at", "user", "returned_at")
+    list_filter = ("employee", "tool", "user")
+    search_fields = ("employee", "tool", "taken_at", "user", "returned_at")
     readonly_fields = ("created_at", "updated_at")
     list_per_page = 13
     fieldsets = (
         ("information", {
-            "fields": ("employee", "tool", "taken_at", "registering_user", "returned_at", "notes", "created_at", "updated_at")
+            "fields": ("employee", "tool", "taken_at", "user", "returned_at", "notes", "created_at", "updated_at")
         }),
     )
 
 
 class EntryExitLogAdmin(admin.ModelAdmin):
-    list_display = ("id", "employee", "exit_time", "entry_time", "approved_by", "created_at")
-    list_display_links = ("employee", "entry_time", "approved_by", "created_at")
-    list_filter = ("employee", "entry_time", "approved_by")
+    list_display = ("id", "employee", "exit_time", "entry_time", "user", "created_at")
+    list_display_links = ("employee", "entry_time", "user", "created_at")
+    list_filter = ("employee", "entry_time", "user")
     readonly_fields = ("created_at", "updated_at")
     list_per_page = 13
 
     fieldsets = (
         ("information", {
-            "fields": ("employee", "exit_time", "entry_time", "reason", "approved_by", "created_at", "updated_at")
+            "fields": ("employee", "exit_time", "entry_time", "reason", "user", "created_at", "updated_at")
         }),
     )
 

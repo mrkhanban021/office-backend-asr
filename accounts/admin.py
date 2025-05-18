@@ -17,10 +17,10 @@ class OTPRequestAdmin(admin.ModelAdmin):
 
 @admin.register(ProfileUser)
 class ProfileUserAdmin(admin.ModelAdmin):
-    list_display = ("id", 'user', 'name', 'last_name','id_code', 'created_at')
-    search_fields = ("id", 'user', 'name', 'last_name','id_code')
+    list_display = ("id", 'user', 'name', 'last_name', 'id_code', 'created_at')
+    search_fields = ("id", 'user', 'name', 'last_name', 'id_code')
     ordering = ('created_at',)
-    list_display_links = ("id", 'user', 'name', 'last_name','id_code', 'created_at')
+    list_display_links = ("id", 'user', 'name', 'last_name', 'id_code', 'created_at')
     list_per_page = 13
 
 

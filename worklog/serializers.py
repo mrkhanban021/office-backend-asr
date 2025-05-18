@@ -24,22 +24,24 @@ class ToolCategorySerializers(serializers.ModelSerializer):
 
 
 class DepartmentSerializers(serializers.ModelSerializer):
+    user = SimpleUserSerializer(read_only=True)
+
     class Meta:
         model = Department
-        fields = ("id", "title", "is_active")
+        fields = ("id", "title", "is_active", "user",)
 
 
 class EmployeeSerializers(serializers.ModelSerializer):
     department_id = DepartmentSerializers(source="department", read_only=True)
     department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())
 
-    created_user = SimpleUserSerializer(source="created_by", read_only=True)
-    created_by = serializers.PrimaryKeyRelatedField(queryset=USER.objects.all())
+    user = SimpleUserSerializer(read_only=True)
+
 
     class Meta:
         model = Employee
-        fields = ("id", "first_name", "last_name", "employee_id","email", "phone_number", "hire_date",
-                  "position", "avatar", "address", "is_active", "date_of_birth","created_by","created_user", "department", "department_id")
+        fields = ("id", "first_name", "last_name", "employee_id", "email", "phone_number", "hire_date",
+                  "position", "signature_image", "fingerprint_image", "address", "is_active", "date_of_birth", "user", "department", "department_id")
 
 
 class EmployeeSerializersName(serializers.ModelSerializer):

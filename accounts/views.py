@@ -103,13 +103,13 @@ class VerifyOTPView(APIView):
 class ListUserApi(ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAdminUser,)
 
 
 class ListUserApiDetails(RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAdminUser,)
 
 
 class ListOTPApiDetails(ListAPIView):

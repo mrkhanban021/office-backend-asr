@@ -1,10 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 import os
 from django.utils import timezone
 import random
 import datetime
+
+
 
 
 class CustomUserManager(BaseUserManager):
