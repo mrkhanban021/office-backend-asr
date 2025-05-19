@@ -23,18 +23,18 @@ class LogingLogAdmin(admin.ModelAdmin):
 
 
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ("id", "last_name", "position", "employee_id", "department", "is_active")
-    list_display_links = ("id", "last_name", "position", "employee_id", "department")
+    list_display = ("id", "last_name", "position", "id_code", "department", "is_active")
+    list_display_links = ("id", "last_name", "position", "id_code", "department")
     list_editable = ("is_active",)
     readonly_fields = ("created_at", "updated_at")
     list_per_page = 13
 
     fieldsets = (
         ("Personal information", {
-            "fields": ("first_name", "last_name", "address", "date_of_birth", "phone_number", "email", "signature_image", "fingerprint_image")
+            "fields": ("first_name", "last_name", "id_code", "address", "date_of_birth", "phone_number", "email", "signature_image", "fingerprint_image")
         }),
         ("Job information", {
-            "fields": ("department", "hire_date", "position", "employee_id", "created_at", "updated_at", "user")
+            "fields": ("department", "hire_date", "position", "created_at", "updated_at", "user")
         }),
     )
 

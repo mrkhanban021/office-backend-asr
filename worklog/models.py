@@ -1,4 +1,6 @@
 import os.path
+
+from django.core.exceptions import ValidationError
 from django_jalali.db import models as jmodels
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -56,6 +58,15 @@ def fingerprint_upload_path(instance, filename):
     return employee_upload_path(instance, filename, "fingerprint")
 
 
+def validate_national_code(value):
+    if not value.isdigit() or len(value) != 10:
+        raise ValidationError("کد ملی باید دقیقا 10 رقم باشد.")
+    check = int(value[9])
+    s = sum([int(value[x]) * (10 - x) for x in range(9)]) % 11
+    if not ((s < 2 and check == s) or (s >= 2 and check + s == 11)):
+        raise ValidationError("کد ملی نامعتبر است.")
+
+
 class Employee(models.Model):
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, verbose_name="department")
     first_name = models.CharField(max_length=100, null=True, blank=True)
@@ -68,7 +79,7 @@ class Employee(models.Model):
     address = models.TextField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     date_of_birth = jmodels.jDateField(null=True, blank=True)
-    employee_id = models.CharField(max_length=20, unique=True)
+    id_code = models.CharField(max_length=10, unique=True, validators=[validate_national_code])
     signature_image = models.ImageField(upload_to=signature_upload_path, null=True, blank=True)
     fingerprint_image = models.ImageField(upload_to=fingerprint_upload_path, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -44,7 +44,7 @@ class EmployeeSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Employee
-        fields = ("id", "first_name", "last_name", "employee_id", "email", "phone_number", "hire_date",
+        fields = ("id", "first_name", "last_name", "id_code", "email", "phone_number", "hire_date",
                   "position", "signature_image", "fingerprint_image", "address", "is_active", "date_of_birth", "user", "department", "department_id")
 
 
