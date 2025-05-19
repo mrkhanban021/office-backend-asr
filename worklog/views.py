@@ -93,7 +93,7 @@ class DepartmentList(ListCreateAPIView):
 class DepartmentDetail(RetrieveUpdateDestroyAPIView):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializers
-    permission_classes = [AllowAny]
+
 
 
 class ToolCategoryList(ListCreateAPIView):

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import (Department, Employee, ToolCategory, Tools, PeopleCategory, ToolTransferLog, ExternalPerson, EntryExitLog)
 from django.contrib.auth import get_user_model
+from django_jalali.serializers.serializerfield import JDateField, JDateTimeField
 
 USER = get_user_model()
 
@@ -34,6 +35,9 @@ class DepartmentSerializers(serializers.ModelSerializer):
 class EmployeeSerializers(serializers.ModelSerializer):
     department_id = DepartmentSerializers(source="department", read_only=True)
     department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())
+    date_of_birth = JDateField()
+    hire_date = JDateField()
+
 
     user = SimpleUserSerializer(read_only=True)
 
