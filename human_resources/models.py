@@ -90,9 +90,9 @@ class BankAccount(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True)
     full_name = models.CharField(null=True, blank=True, max_length=100)
     title = models.CharField(max_length=20, null=True, blank=True)
-    account_number = models.CharField(max_length=30, null=True, blank=True)
-    card_number = models.CharField(max_length=30, null=True, blank=True)
-    sheba_number = models.CharField(max_length=35, null=True, blank=True)
+    account_number = models.CharField(max_length=30, unique=True)
+    card_number = models.CharField(max_length=30, unique=True)
+    sheba_number = models.CharField(max_length=35,  unique=True)
     is_active = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
