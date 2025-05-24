@@ -16,13 +16,13 @@ class AssistanceRequest(models.Model):
     request_date = jmodels.jDateField(auto_now_add=True)
     amount = models.DecimalField(max_digits=20, decimal_places=2)
     loan_installment = models.BooleanField(default=False)
-    installment_amount = models.DecimalField(max_digits=20, null=True, blank=True, decimal_places=2)  # مبلغ قسط
-    total_installments = models.PositiveIntegerField(null=True, blank=True)  # تعداد کل اقساط
-    paid_installments = models.PositiveIntegerField(default=0)  # چند قسط پرداخت شده
-    account_number = models.CharField(max_length=30, blank=True, null=True)  # شماره حساب (در صورت نیاز)
-    card_number = models.CharField(max_length=30, blank=True, null=True)  # شماره کارت
-    sheba_number = models.CharField(max_length=35, null=True, blank=True)  # شماره شبا
-    explanation = models.TextField(null=True, blank=True)  # توضیحات درباره دلیل درخواست مساعده
+    installment_amount = models.DecimalField(max_digits=20, null=True, blank=True, decimal_places=2)
+    total_installments = models.PositiveIntegerField(null=True, blank=True)
+    paid_installments = models.PositiveIntegerField(default=0)
+    account_number = models.CharField(max_length=30, blank=True, null=True)
+    card_number = models.CharField(max_length=30, blank=True, null=True)
+    sheba_number = models.CharField(max_length=35, null=True, blank=True)
+    explanation = models.TextField(null=True, blank=True)
 
     manager_approval = models.BooleanField(default=False)
     manager_comment = models.TextField(null=True, blank=True)
@@ -48,7 +48,7 @@ class AssistanceRequest(models.Model):
     class Meta:
         verbose_name = "AssistanceRequest"
         verbose_name_plural = "AssistanceRequest"
-        ordering = ("-request_date",)
+        ordering = ("-create_at",)
 
 
 class MonthlyAssistanceSummary(models.Model):

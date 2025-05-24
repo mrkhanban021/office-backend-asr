@@ -84,6 +84,7 @@ class EntryExitLogDetail(RetrieveUpdateDestroyAPIView):
 class DepartmentList(ListCreateAPIView):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializers
+    permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
