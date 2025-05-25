@@ -8,7 +8,7 @@ class AssistanceRequestAdmin(admin.ModelAdmin):
     list_filter = ("final_approval", "manager_approval", "admin_approval", "ceo_approval")
     search_fields = ("full_name", "employee")
     list_display_links = ("id", "employee", "request_date")
-    readonly_fields = ("request_date", "create_at", "updated_at")
+    readonly_fields = ("request_date", "created_at", "updated_at")
     list_per_page = 13
 
 

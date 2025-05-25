@@ -32,7 +32,7 @@ class AssistanceRequest(models.Model):
 
     final_approval = models.BooleanField(default=False)
 
-    create_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
@@ -48,7 +48,7 @@ class AssistanceRequest(models.Model):
     class Meta:
         verbose_name = "AssistanceRequest"
         verbose_name_plural = "AssistanceRequest"
-        ordering = ("-create_at",)
+        ordering = ("-created_at",)
 
 
 class MonthlyAssistanceSummary(models.Model):
@@ -67,18 +67,38 @@ class MonthlyAssistanceSummary(models.Model):
         super().save(*args, **kwargs)
 
     @staticmethod
-    def update_summary(employee, amount):
-        now = timezone.now()
-        print(f"{employee} {amount}")
-        shamsi_date = jdatetime.date.fromgregorian(year=now.year, month=now.month, day=now.day)
+    def update_summary(employee, amount, date=None):
+        if date is None:
+            date = timezone.now()
+        shamsi_date = jdatetime.date.fromgregorian(year=date.year, month=date.month, day=date.day)
         shamsi_year = shamsi_date.year
         shamsi_month = shamsi_date.month
 
-        summary, created = MonthlyAssistanceSummary.objects.get_or_create(employee=employee, year=shamsi_year,
-                                                                          month=shamsi_month)
+        summary, created = MonthlyAssistanceSummary.objects.get_or_create(
+            employee=employee,
+            year=shamsi_year,
+            month=shamsi_month
+        )
         summary.total_assistance += amount
         summary.assistance_requests_count += 1
         summary.save()
+
+    @staticmethod
+    def update_summary_amount_change(employee, amount_diff, date):
+        shamsi_date = jdatetime.date.fromgregorian(year=date.year, month=date.month, day=date.day)
+        shamsi_year = shamsi_date.year
+        shamsi_month = shamsi_date.month
+
+        try:
+            summary = MonthlyAssistanceSummary.objects.get(
+                employee=employee,
+                year=shamsi_year,
+                month=shamsi_month
+            )
+            summary.total_assistance += amount_diff  # ممکن است مثبت یا منفی باشد
+            summary.save()
+        except MonthlyAssistanceSummary.DoesNotExist:
+            pass  # اگر پیدا نشد، چیزی تغییر نمی‌کند
 
     class Meta:
         verbose_name = "MonthlyAssistanceSummary"
