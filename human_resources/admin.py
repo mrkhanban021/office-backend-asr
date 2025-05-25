@@ -40,8 +40,8 @@ class LeaveRequestAdmin(admin.ModelAdmin):
 
 
 class MonthlyLeaveSummaryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'full_name', 'year', 'month', 'total_leave', 'leave_requests_count', 'create_at')
-    list_display_links = ('id', 'full_name', 'year', 'month', 'total_leave', 'leave_requests_count', 'create_at')
+    list_display = ('id', 'full_name', 'year', 'month', 'total_leave', 'leave_requests_count', 'created_at')
+    list_display_links = ('id', 'full_name', 'year', 'month', 'total_leave', 'leave_requests_count', 'created_at')
     search_fields = ('employee__first_name', 'employee__last_name')
     list_filter = ('year', 'month')
     list_per_page = 13

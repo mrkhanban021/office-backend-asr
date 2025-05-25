@@ -9,19 +9,16 @@ from rest_framework.permissions import AllowAny
 class AssistanceRequestList(ListCreateAPIView):
     queryset = AssistanceRequest.objects.all()
     serializer_class = AssistanceRequestSerializers
-    permission_classes = [AllowAny]
 
 
 class AssistanceRequestDetails(RetrieveUpdateDestroyAPIView):
     queryset = AssistanceRequest.objects.all()
     serializer_class = AssistanceRequestSerializers
-    permission_classes = [AllowAny]
 
 
 class MonthlyAssistanceSummaryList(ListCreateAPIView):
     queryset = MonthlyAssistanceSummary.objects.all()
     serializer_class = MonthlyAssistanceSummarySerializers
-    permission_classes = [AllowAny]
 
 
 class MonthlyAssistanceSummaryDetail(RetrieveUpdateDestroyAPIView):

@@ -190,7 +190,7 @@ class MonthlyLeaveSummary(models.Model):
     month = models.PositiveIntegerField()
     total_leave = models.DecimalField(max_digits=20, decimal_places=2, default=0)
     leave_requests_count = models.PositiveIntegerField(default=0)
-    create_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
@@ -199,31 +199,37 @@ class MonthlyLeaveSummary(models.Model):
         super().save(*args, **kwargs)
 
     @staticmethod
-    def update_summary(employee, leave_request):
+    def update_summary(employee, leave_request, old_request=None):
         now = timezone.now()
         shamsi_date = jdatetime.date.fromgregorian(year=now.year, month=now.month, day=now.day)
         shamsi_year = shamsi_date.year
         shamsi_month = shamsi_date.month
 
-        if leave_request.duration_type == "daily":
+        def calculate_hours(req):
+            if req.duration_type == "daily":
+                days_off = (req.end_date - req.start_date).days + 1
+                return Decimal(days_off * 8)
+            elif req.duration_type == "hourly":
+                j_date = jdatetime.date(req.hourly_date.year, req.hourly_date.month, req.hourly_date.day)
+                gregorian_date = j_date.togregorian()
+                start_time = datetime.combine(gregorian_date, req.time_from)
+                end_time = datetime.combine(gregorian_date, req.time_to)
+                return Decimal((end_time - start_time).seconds) / Decimal(3600)
+            return Decimal(0)
 
-            days_off = (leave_request.end_date - leave_request.start_date).days + 1
-            amount = days_off * 8
-        elif leave_request.duration_type == "hourly":
-
-            j_date = jdatetime.date(leave_request.hourly_date.year, leave_request.hourly_date.month,
-                                    leave_request.hourly_date.day)
-            gregorian_date = j_date.togregorian()
-            start_time = datetime.combine(gregorian_date, leave_request.time_from)
-            end_time = datetime.combine(gregorian_date, leave_request.time_to)
-            amount = (end_time - start_time).seconds / 3600
-            amount = Decimal(amount)
-
-        summary, created = MonthlyLeaveSummary.objects.get_or_create(
+        current_amount = calculate_hours(leave_request)
+        summary, _ = MonthlyLeaveSummary.objects.get_or_create(
             employee=employee, year=shamsi_year, month=shamsi_month
         )
-        summary.total_leave += amount
-        summary.leave_requests_count += 1
+
+        if old_request:
+            previous_amount = calculate_hours(old_request)
+            summary.total_leave -= previous_amount  # کم کردن مقدار قبلی
+            summary.total_leave += current_amount  # اضافه کردن مقدار جدید
+        else:
+            summary.total_leave += current_amount
+            summary.leave_requests_count += 1
+
         summary.save()
 
     def __str__(self):
@@ -232,6 +238,6 @@ class MonthlyLeaveSummary(models.Model):
     class Meta:
         verbose_name = "MonthlyLeaveSummary"
         verbose_name_plural = "MonthlyLeaveSummaries"
-        ordering = ("-create_at",)
+        ordering = ("-created_at",)
 
 
