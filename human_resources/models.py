@@ -180,7 +180,7 @@ class LeaveRequest(models.Model):
     class Meta:
         verbose_name = "LeaveRequest"
         verbose_name_plural = "LeaveRequests"
-        ordering = ("-request_date",)
+        ordering = ("-created_at",)
 
 
 class MonthlyLeaveSummary(models.Model):
@@ -224,8 +224,8 @@ class MonthlyLeaveSummary(models.Model):
 
         if old_request:
             previous_amount = calculate_hours(old_request)
-            summary.total_leave -= previous_amount  # کم کردن مقدار قبلی
-            summary.total_leave += current_amount  # اضافه کردن مقدار جدید
+            summary.total_leave -= previous_amount
+            summary.total_leave += current_amount
         else:
             summary.total_leave += current_amount
             summary.leave_requests_count += 1

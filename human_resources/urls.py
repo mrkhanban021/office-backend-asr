@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import (AssistanceRequestList, AssistanceRequestDetails, MonthlyAssistanceSummaryList,
                     MonthlyAssistanceSummaryDetail, BankAccountList, BankAccountDetails,
-                    LeaveRequestList, LeaveRequestDetail, MonthlyLeaveSummaryList, MonthlyLeaveSummaryDetail)
+                    LeaveRequestList, LeaveRequestDetail, MonthlyLeaveSummaryList, MonthlyLeaveSummaryDetail
+                    , LeaveRequestPDFView)
 
 app_name = "human_resources"
 
@@ -16,6 +17,7 @@ urlpatterns = [
     path("LeaveRequest/<int:pk>", LeaveRequestDetail.as_view(), name="LeaveRequestDetail"),
     path("MonthlyLeave/", MonthlyLeaveSummaryList.as_view(), name="MonthlyLeaveSummaryList"),
     path("MonthlyLeave/<int:pk>", MonthlyLeaveSummaryDetail.as_view(), name="MonthlyLeaveSummaryDetail"),
+    path('leave-request/<int:pk>/pdf/', LeaveRequestPDFView.as_view(), name='leave-request-pdf'),
 
 ]
 
