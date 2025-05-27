@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.template.loader import render_to_string
 from django.http import HttpResponse, FileResponse
-import templates
+import tempfile
 
 
 class AssistanceRequestList(ListCreateAPIView):
@@ -72,13 +72,12 @@ class MonthlyLeaveSummaryDetail(RetrieveUpdateDestroyAPIView):
 
 
 class LeaveRequestPDFView(APIView):
-    permission_classes = [AllowAny]
 
     def get(self, request, pk):
         try:
             leave = LeaveRequest.objects.get(pk=pk, final_approval=True)
         except LeaveRequest.DoesNotExist:
-            return Response({"error": "LeaveRequest not found or not approved."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "درخواست به تایید نهایی نرسیده است"}, status=status.HTTP_404_NOT_FOUND)
 
         html_string = render_to_string('pdfLeaveRequest/single_leave_request.html', {'leave': leave})
         html = HTML(string=html_string)
