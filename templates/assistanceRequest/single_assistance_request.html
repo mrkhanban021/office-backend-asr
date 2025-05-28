@@ -1,15 +1,16 @@
 {% load static %}
+{% load humanize %}
 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>فرم مرخصی</title>
+  <title>فرم درخواست مساعده</title>
   <style>
       @font-face {
           font-family: "Vazir";
-             src: url("{{ STATIC_URL }}fonts/Vazirmatn-Regular.woff2") format("woff"),
-                  url("{{ STATIC_URL }}fonts/Vazirmatn-Regular.ttf") format("truetype");
+          src: url("{{ STATIC_URL }}fonts/Vazirmatn-Regular.woff2") format("woff"),
+               url("{{ STATIC_URL }}fonts/Vazirmatn-Regular.ttf") format("truetype");
           font-weight: normal;
           font-style: normal;
       }
@@ -24,7 +25,7 @@
       background: #f5f5f5;
       font-family: Vazir, Tahoma, sans-serif;
       direction: rtl;
-        min-height: 100vh;
+      min-height: 100vh;
     }
 
     body {
@@ -36,7 +37,7 @@
 
     .container {
       width: 100%;
-      max-width: 793px; /* معادل عرض A4 با حاشیه */
+      max-width: 793px;
       background: #fff;
       padding: 30px;
       box-sizing: border-box;
@@ -96,7 +97,7 @@
     .signature {
       display: flex;
       justify-content: space-between;
-      margin-top: 200px;
+      margin-top: 20px;
       font-size: 13px;
       text-align: center;
     }
@@ -105,82 +106,84 @@
       width: 24%;
       padding-top: 40px;
       border-top: 1px solid #999;
-
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <div class="request-date">تاریخ درخواست: <span>{{ leave.request_date }}</span></div>
+      <div class="request-date">تاریخ درخواست: <span>{{ assistance.request_date }}</span></div>
       <div class="logo">
         <img src="https://asr-elevator.ir/wp-content/uploads/2025/05/logo.jpg" alt="logo">
       </div>
     </div>
 
-    <div class="title">فرم درخواست مرخصی</div>
+    <div class="title">فرم درخواست مساعده</div>
 
     <table class="info-table">
       <tr>
         <td>نام و نام خانوادگی</td>
-        <td>{{ leave.full_name }}</td>
+        <td>{{ assistance.full_name }}</td>
       </tr>
       <tr>
-        <td>نوع مرخصی</td>
-        <td>{{ leave.get_leave_type_display }}</td>
+        <td>مبلغ مساعده</td>
+        <td>{{ assistance.amount|floatformat:0|intcomma }} ریال</td>
       </tr>
       <tr>
-        <td>مدت مرخصی</td>
-        <td>{{ leave.get_duration_type_display }}</td>
-      </tr>
-
-      {% if leave.duration_type == "hourly" %}
-      <tr>
-        <td>تاریخ مرخصی ساعتی</td>
-        <td>{{ leave.hourly_date }}</td>
+        <td> وام  </td>
+        <td>{% if assistance.loan_installment %}بله{% else %}خیر{% endif %}</td>
       </tr>
       <tr>
-        <td> از ساعت</td>
-        <td>{{ leave.time_from|time:"H:i" }}</td>
+        <td>مبلغ هر قسط</td>
+        <td>{{ assistance.installment_amount|floatformat:0|intcomma|default:"-" }} ریال</td>
       </tr>
       <tr>
-        <td> تا ساعت</td>
-        <td>{{ leave.time_to|time:"H:i" }}</td>
-      </tr>
-      {% elif leave.duration_type == "daily" %}
-      <tr>
-        <td>از تاریخ</td>
-        <td>{{ leave.start_date }}</td>
+        <td>تعداد کل اقساط</td>
+        <td>{{ assistance.total_installments|default:"-" }}</td>
       </tr>
       <tr>
-        <td>تا تاریخ</td>
-        <td>{{ leave.end_date }}</td>
+        <td>تعداد اقساط پرداخت‌شده</td>
+        <td>{{ assistance.paid_installments }}</td>
       </tr>
-      {% endif %}
-
+      <tr>
+        <td>شماره حساب</td>
+        <td>{{ assistance.account_number|default:"-" }}</td>
+      </tr>
+      <tr>
+        <td>شماره کارت</td>
+        <td>{{ assistance.card_number|default:"-" }}</td>
+      </tr>
+      <tr>
+        <td>شماره شبا</td>
+        <td>{{ assistance.sheba_number|default:"-" }}</td>
+      </tr>
+      <tr>
+        <td>توضیحات</td>
+        <td>{{ assistance.explanation|default:"-" }}</td>
+      </tr>
       <tr>
         <td>توضیحات مدیر</td>
-        <td>{{ leave.manager_comment|default:"-" }}</td>
+        <td>{{ assistance.manager_comment|default:"-" }}</td>
       </tr>
       <tr>
         <td>توضیحات مدیرعامل</td>
-        <td>{{ leave.ceo_reject_reason|default:"-" }}</td>
+        <td>{{ assistance.ceo_comment|default:"-" }}</td>
       </tr>
       <tr>
         <td>تایید مدیر</td>
-        <td>{% if leave.manager_approval %}تایید شده{% else %}در انتظار تایید{% endif %}</td>
+        <td>{% if assistance.manager_approval %}تایید شده{% else %}در انتظار تایید{% endif %}</td>
       </tr>
       <tr>
         <td>تایید مدیر اداری</td>
-        <td>{% if leave.admin_approval %}تایید شده{% else %}در انتظار تایید{% endif %}</td>
+        <td>{% if assistance.admin_approval %}تایید شده{% else %}در انتظار تایید{% endif %}</td>
       </tr>
       <tr>
         <td>تایید مدیرعامل</td>
-        <td>{% if leave.ceo_approval %}تایید شده{% else %}در انتظار تایید{% endif %}</td>
+        <td>{% if assistance.ceo_approval %}تایید شده{% else %}در انتظار تایید{% endif %}</td>
       </tr>
       <tr>
         <td>تایید نهایی</td>
-        <td>{% if leave.final_approval %}تایید شده{% else %}در انتظار تایید{% endif %}</td>
+        <td>{% if assistance.final_approval %}تایید شده{% else %}در انتظار تایید{% endif %}</td>
       </tr>
     </table>
 

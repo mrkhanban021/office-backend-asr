@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (AssistanceRequestList, AssistanceRequestDetails, MonthlyAssistanceSummaryList,
                     MonthlyAssistanceSummaryDetail, BankAccountList, BankAccountDetails,
                     LeaveRequestList, LeaveRequestDetail, MonthlyLeaveSummaryList, MonthlyLeaveSummaryDetail
-                    , LeaveRequestPDFView)
+                    , LeaveRequestPDFView, AllLeaveRequestsPDFView, Assistance_requestPDF, AllAssistanceRequestsPDFView)
 
 app_name = "human_resources"
 
@@ -18,6 +18,9 @@ urlpatterns = [
     path("MonthlyLeave/", MonthlyLeaveSummaryList.as_view(), name="MonthlyLeaveSummaryList"),
     path("MonthlyLeave/<int:pk>", MonthlyLeaveSummaryDetail.as_view(), name="MonthlyLeaveSummaryDetail"),
     path('leave-request/<int:pk>/pdf/', LeaveRequestPDFView.as_view(), name='leave-request-pdf'),
+    path('leave-request/pdf/', AllLeaveRequestsPDFView.as_view(), name='all-request-pdf'),
+    path("AssistanceRequest/<int:pk>/pdf/", Assistance_requestPDF.as_view(), name='Assistance_requestPDF'),
+    path("AssistanceRequest/pdf/", AllAssistanceRequestsPDFView.as_view(), name='AllAssistanceRequestsPDFView'),
 
 ]
 

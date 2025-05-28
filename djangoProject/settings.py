@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django.contrib.humanize',
     'drf_spectacular',
     'django_jalali',
     'django_filters',

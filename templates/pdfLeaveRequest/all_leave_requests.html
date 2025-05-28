@@ -1,0 +1,109 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face {
+            font-family: 'Vazir';
+            src: url("{{ STATIC_URL }}fonts/Vazirmatn-Regular.woff2") format("woff2"),
+                 url("{{ STATIC_URL }}fonts/Vazirmatn-Regular.ttf") format("truetype");
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @page {
+            size: A4 landscape;
+            margin: 0.5cm;
+        }
+
+        body {
+            font-family: 'Vazir', Tahoma, sans-serif;
+            direction: rtl;
+            background-color: #fff;
+            font-size: 12px;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #000;
+            padding: 10px;
+            border: 1px solid #999;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+
+        tr:hover {
+            background-color: #f1f7ff;
+        }
+    </style>
+</head>
+<body>
+    <h2>لیست مرخصی‌های تأیید نهایی‌شده</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ردیف</th>
+                <th>نام کامل</th>
+                <th>تاریخ درخواست</th>
+                <th>نوع درخواست</th>
+                <th>نوع مرخصی</th>
+                <th>از تاریخ / ساعت</th>
+                <th>تا تاریخ / ساعت</th>
+                <th>تاریخ ساعتی</th>
+                <th>توضیحات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for leave in leaves %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ leave.full_name }}</td>
+                    <td>{{ leave.request_date|date:"Y/m/d" }}</td>
+                    <td>{{ leave.get_leave_type_display }}</td>
+                    <td>{{ leave.get_duration_type_display }}</td>
+
+                    {% if leave.duration_type == 'hourly' %}
+                        <td>{{ leave.time_from|time:"H:i" }}</td>
+                        <td>{{ leave.time_to|time:"H:i" }}</td>
+                        <td>{{ leave.hourly_date|date:"Y/m/d" }}</td>
+                    {% elif leave.duration_type == 'daily' %}
+                        <td>{{ leave.start_date|date:"Y/m/d" }}</td>
+                        <td>{{ leave.end_date|date:"Y/m/d" }}</td>
+                        <td>-</td>
+                    {% else %}
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    {% endif %}
+
+                    <td>{{ leave.description }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

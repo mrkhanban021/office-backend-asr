@@ -71,6 +71,7 @@ class MonthlyLeaveSummaryDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny]
 
 
+
 class LeaveRequestPDFView(APIView):
 
     def get(self, request, pk):
@@ -86,3 +87,60 @@ class LeaveRequestPDFView(APIView):
 
         result.seek(0)
         return FileResponse(result, as_attachment=True, filename=f'{leave.full_name}_leave.pdf')
+
+
+
+class AllLeaveRequestsPDFView(APIView):
+
+    def get(self, request):
+        leaves = LeaveRequest.objects.filter(final_approval=True).order_by('-created_at')
+
+        if not leaves.exists():
+            return Response({"error": "هیچ درخواست تایید شده ای یافت نشد"}, status=status.HTTP_404_NOT_FOUND)
+
+        html_string = render_to_string('pdfLeaveRequest/all_leave_requests.html', {'leaves': leaves})
+        html = HTML(string=html_string)
+        result = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+        html.write_pdf(target=result.name)
+
+        result.seek(0)
+        return FileResponse(result, as_attachment=True, filename="all_leave_requests.pdf")
+
+
+
+class Assistance_requestPDF(APIView):
+
+    def get(self, request, pk):
+        try:
+            assistance = AssistanceRequest.objects.get(pk=pk, final_approval=True)
+        except AssistanceRequest.DoesNotExist:
+            return Response({'error': "درخواست به تایید نهایی نرسیده است"}, status=status.HTTP_400_BAD_REQUEST)
+
+        html_string = render_to_string("assistanceRequest/single_assistance_request.html", {"assistance": assistance})
+        html = HTML(string=html_string)
+        result = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+        html.write_pdf(target=result.name)
+
+        result.seek(0)
+        return FileResponse(result, as_attachment=True , filename=f"{assistance.full_name}_assistance.pdf")
+
+
+
+class AllAssistanceRequestsPDFView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        assistances = AssistanceRequest.objects.filter(final_approval=True).order_by('created_at')
+
+        if not assistances.exists():
+            return Response({"error":"هیچ درخواست تایید شده ای یافت نشد"}, status=status.HTTP_404_NOT_FOUND)
+
+        html_string = render_to_string("assistanceRequest/all_assistance_requests.html", {"assistances": assistances})
+        html = HTML(string=html_string)
+        result = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+        html.write_pdf(target=result.name)
+
+        result.seek(0)
+        return FileResponse(result, as_attachment=True, filename="all_assistance_requests.pdf")
+
+
