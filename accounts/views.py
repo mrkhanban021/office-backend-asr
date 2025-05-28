@@ -10,6 +10,7 @@ from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 from worklog.signals import user_logged_in_signal
 from .webonesms.config import send_otp_message
+from djangoProject.core.permissions import CustomerAccessPermission
 
 
 class SendOtp(APIView):
@@ -103,7 +104,8 @@ class VerifyOTPView(APIView):
 class ListUserApi(ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = (IsAdminUser,)
+    permission_classes = [CustomerAccessPermission]
+
 
 
 class ListUserApiDetails(RetrieveUpdateDestroyAPIView):
