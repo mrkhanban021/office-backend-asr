@@ -82,7 +82,7 @@ class EntryExitLogAdmin(admin.ModelAdmin):
     list_display = ("id", "employee", "exit_time", "entry_time", "user", "created_at")
     list_display_links = ("employee", "entry_time", "user", "created_at")
     list_filter = ("employee", "entry_time", "user")
-    readonly_fields = ("created_at", "updated_at")
+    readonly_fields = ("created_at", "updated_at", "exit_time")
     list_per_page = 13
 
     fieldsets = (
@@ -111,12 +111,12 @@ class ExternalPersonAdmin(admin.ModelAdmin):
     list_display_links = ("id", "full_name")
     list_filter = ("category",)
     search_fields = ("full_name", "national_code", "phone_number")
-    readonly_fields = ("entered_at", "updated_at")
+    readonly_fields = ("centered_at", )
     list_per_page = 13
 
     fieldsets = (
         ("information", {
-            "fields": ("category", "full_name", "national_code", "phone_number", "compony", "entered_at", "updated_at", "notex")
+            "fields": ("category", "full_name", "national_code", "phone_number", "compony", "centered_at", "exit", "notex", "user")
         }),
     )
 

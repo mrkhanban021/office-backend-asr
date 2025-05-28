@@ -61,7 +61,7 @@ class EmployeeSerializersName(serializers.ModelSerializer):
 
 class ToolsSerializers(serializers.ModelSerializer):
     created_by_display = SimpleUserSerializer(source="created_by", read_only=True)
-    created_by = serializers.PrimaryKeyRelatedField(queryset=USER.objects.all())
+    user = serializers.PrimaryKeyRelatedField(queryset=USER.objects.all())
     ToolCategory = serializers.PrimaryKeyRelatedField(queryset=ToolCategory.objects.all())
     ToolCategory_list = ToolCategorySerializers(source="ToolCategory", read_only=True)
     department_list = DepartmentSerializers(source="department", read_only=True)
@@ -69,7 +69,7 @@ class ToolsSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Tools
-        fields = ("id","title", "seria_number", "counting", "description", "created_at", "created_by_display", "created_by",
+        fields = ("id", "title", "seria_number", "counting", "description", "created_at", "created_by_display", "user",
                   "ToolCategory_list", "ToolCategory", "department_list", "department")
 
 
@@ -80,14 +80,12 @@ class ToolsSerializersName(serializers.ModelSerializer):
 
 
 class ToolTransferLogSerializers(serializers.ModelSerializer):
-    tool_name = ToolsSerializersName(source="tool", read_only=True)
-    tool = serializers.PrimaryKeyRelatedField(queryset=Tools.objects.all())
-    employee_name =  EmployeeSerializersName(source="employee" , read_only=True)
-    employee = serializers.PrimaryKeyRelatedField(queryset=Employee.objects.all())
+    taken_at = JDateField(required=False, allow_null=True)
+    returned_at = JDateField(required=False, allow_null=True)
 
     class Meta:
         model = ToolTransferLog
-        fields = ("id", "employee","employee_name", "taken_at", "returned_at", "registering_user", "notes", "created_at", "tool","tool_name")
+        fields = ("id", "employee", "taken_at", "returned_at", "user", "notes", "created_at", "tool")
 
 
 class PeopleCategorySerializers(serializers.ModelSerializer):
@@ -98,26 +96,19 @@ class PeopleCategorySerializers(serializers.ModelSerializer):
 
 
 class ExternalPersonSerializers(serializers.ModelSerializer):
-    category_name = PeopleCategorySerializers(source="category", read_only=True)
-    category = serializers.PrimaryKeyRelatedField(queryset=PeopleCategory.objects.all())
-    register_user_name = SimpleUserSerializer(source="register_user", read_only=True)
-    register_user = serializers.PrimaryKeyRelatedField(queryset=USER.objects.all())
+    centered_at = JDateTimeField(required=False, allow_null=True)
 
     class Meta:
         model = ExternalPerson
-        fields = ("id", "full_name", "national_code", "phone_number", "compony","notex","entered_at",
-                  "register_user","register_user_name", "category_name", "category", "category_name")
-        read_only_fields = ("entered_at", "updated_at")
+        fields = ("id", "full_name", "national_code", "phone_number", "compony", "notex", "centered_at", "exit",
+                  "user",  "category")
+        read_only_fields = ("centered_at",)
 
 
 class EntryExitLogSerializers(serializers.ModelSerializer):
-    employee_name = EmployeeSerializersName(source="employee", read_only=True)
-    employee = serializers.PrimaryKeyRelatedField(queryset=Employee.objects.all())
-
-    approved_name = SimpleUserSerializer(source="approved_by", read_only=True)
-    approved_by = serializers.PrimaryKeyRelatedField(queryset=USER.objects.all())
+    exit_time = JDateTimeField(required=False, allow_null=True)
 
     class Meta:
         model = EntryExitLog
-        fields = ("id", "employee", "employee_name", "exit_time","entry_time", "reason", "approved_by", "approved_name")
+        fields = ("id", "employee", "exit_time", "entry_time", "reason", "user")
         read_only_fields = ("created_at", "updated_at", "exit_time")

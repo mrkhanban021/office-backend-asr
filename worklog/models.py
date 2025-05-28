@@ -134,8 +134,8 @@ class ToolTransferLog(models.Model):
     tool = models.ForeignKey(Tools, on_delete=models.CASCADE, related_name="transfer_logs")
     employee = models.ForeignKey(Employee, models.CASCADE, related_name="tool_transfers")
 
-    taken_at = models.DateTimeField(default=timezone.now)
-    returned_at = models.DateTimeField(null=True, blank=True)
+    taken_at = jmodels.jDateField(null=True, blank=True)
+    returned_at = jmodels.jDateField(null=True, blank=True)
 
     user = models.ForeignKey(USER, on_delete=models.CASCADE, null=True)
 
@@ -158,8 +158,8 @@ class ToolTransferLog(models.Model):
 class EntryExitLog(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, verbose_name="entry_exit_logs")
 
-    exit_time = models.DateTimeField(default=timezone.now)
-    entry_time = models.DateTimeField(null=True, blank=True)
+    exit_time = jmodels.jDateTimeField(auto_now_add=True)
+    entry_time = models.TimeField(null=True, blank=True)
 
     reason = models.TextField(null=True, blank=True)
     user = models.ForeignKey(USER, on_delete=models.CASCADE, null=True)
@@ -203,14 +203,15 @@ class ExternalPerson(models.Model):
     national_code = models.CharField(max_length=10, blank=True, null=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     compony = models.CharField(max_length=100, null=True, blank=True)
-    entered_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+
+    centered_at = jmodels.jDateTimeField(auto_now_add=True)
+    exit = models.TimeField(null=True, blank=True)
     notex = models.TextField(blank=True, null=True)
 
     class Meta:
         verbose_name = "ExternalPerson"
         verbose_name_plural = "ExternalPerson"
-        ordering = ("-entered_at",)
+        ordering = ("-centered_at",)
 
     def __str__(self):
         return self.full_name
