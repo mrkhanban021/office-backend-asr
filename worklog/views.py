@@ -99,10 +99,9 @@ class DepartmentDetail(RetrieveUpdateDestroyAPIView):
 class ToolCategoryList(ListCreateAPIView):
     queryset = ToolCategory.objects.all()
     serializer_class = ToolCategorySerializers
-    permission_classes = [AllowAny]
 
-    # def perform_create(self, serializer):
-    #     serializer.save(user=self.request.user)
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class ToolCategoryDetail(RetrieveUpdateDestroyAPIView):
