@@ -46,7 +46,7 @@ class ToolCategoryAdmin(admin.ModelAdmin):
     list_per_page = 13
     fieldsets = (
         ("information", {
-            "fields": ("title", "updated_at", "created_at", "user")
+            "fields": ("title", "is_active", "updated_at", "created_at", "user")
         }),
     )
 

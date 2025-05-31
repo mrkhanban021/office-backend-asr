@@ -10,11 +10,13 @@ class ToolsApiList(ListCreateAPIView):
     serializer_class = ToolsSerializers
     permission_classes = [AllowAny]
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 class ToolsApiListDetail(RetrieveUpdateDestroyAPIView):
     queryset = Tools.objects.all()
     serializer_class = ToolsSerializers
-    permission_classes = [AllowAny]
 
 
 

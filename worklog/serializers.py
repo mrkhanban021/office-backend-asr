@@ -60,17 +60,11 @@ class EmployeeSerializersName(serializers.ModelSerializer):
 
 
 class ToolsSerializers(serializers.ModelSerializer):
-    created_by_display = SimpleUserSerializer(source="created_by", read_only=True)
-    user = serializers.PrimaryKeyRelatedField(queryset=USER.objects.all())
-    ToolCategory = serializers.PrimaryKeyRelatedField(queryset=ToolCategory.objects.all())
-    ToolCategory_list = ToolCategorySerializers(source="ToolCategory", read_only=True)
-    department_list = DepartmentSerializers(source="department", read_only=True)
-    department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())
+
 
     class Meta:
         model = Tools
-        fields = ("id", "title", "seria_number", "counting", "description", "created_at", "created_by_display", "user",
-                  "ToolCategory_list", "ToolCategory", "department_list", "department")
+        fields = ("id", "title", "seria_number", "counting", "description", "created_at", "user", "ToolCategory", "department")
 
 
 class ToolsSerializersName(serializers.ModelSerializer):

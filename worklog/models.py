@@ -97,6 +97,7 @@ class Employee(models.Model):
 
 class ToolCategory(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(USER, on_delete=models.CASCADE, null=True, verbose_name="toolCategory")
