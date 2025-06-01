@@ -74,7 +74,9 @@ class ExternalPersonDetail(RetrieveUpdateDestroyAPIView):
 class EntryExitLogList(ListCreateAPIView):
     queryset = EntryExitLog.objects.all()
     serializer_class = EntryExitLogSerializers
-    permission_classes = [AllowAny]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class EntryExitLogDetail(RetrieveUpdateDestroyAPIView):
