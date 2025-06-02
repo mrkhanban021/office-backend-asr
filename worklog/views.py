@@ -23,7 +23,9 @@ class ToolsApiListDetail(RetrieveUpdateDestroyAPIView):
 class ToolTransferLogList(ListCreateAPIView):
     queryset = ToolTransferLog.objects.all()
     serializer_class = ToolTransferLogSerializers
-    permission_classes = (AllowAny,)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class ToolTransferLogDetail(RetrieveUpdateDestroyAPIView):
@@ -68,7 +70,6 @@ class ExternalPersonList(ListCreateAPIView):
 class ExternalPersonDetail(RetrieveUpdateDestroyAPIView):
     queryset = ExternalPerson.objects.all()
     serializer_class = ExternalPersonSerializers
-    permission_classes = [AllowAny]
 
 
 class EntryExitLogList(ListCreateAPIView):
