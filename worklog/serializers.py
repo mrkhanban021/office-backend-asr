@@ -85,7 +85,7 @@ class ToolTransferLogSerializers(serializers.ModelSerializer):
 class PeopleCategorySerializers(serializers.ModelSerializer):
     class Meta:
         model = PeopleCategory
-        fields = ("id", "title", "description",)
+        fields = ("id", "title", "is_active",)
         read_only_fields = ("created_at", "updated_at")
 
 

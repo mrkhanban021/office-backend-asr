@@ -50,19 +50,19 @@ class EmployeeListDetail(RetrieveUpdateDestroyAPIView):
 class PeopleCategoryList(ListCreateAPIView):
     queryset = PeopleCategory.objects.all()
     serializer_class = PeopleCategorySerializers
-    permission_classes = (AllowAny,)
 
 
 class PeopleCategoryDetail(RetrieveUpdateDestroyAPIView):
     queryset = PeopleCategory.objects.all()
     serializer_class = PeopleCategorySerializers
-    permission_classes = (AllowAny,)
 
 
 class ExternalPersonList(ListCreateAPIView):
     queryset = ExternalPerson.objects.all()
     serializer_class = ExternalPersonSerializers
-    permission_classes = [AllowAny]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class ExternalPersonDetail(RetrieveUpdateDestroyAPIView):
@@ -82,7 +82,6 @@ class EntryExitLogList(ListCreateAPIView):
 class EntryExitLogDetail(RetrieveUpdateDestroyAPIView):
     queryset = EntryExitLog.objects.all()
     serializer_class = EntryExitLogSerializers
-    permission_classes = [AllowAny]
 
 
 class DepartmentList(ListCreateAPIView):
@@ -111,4 +110,3 @@ class ToolCategoryList(ListCreateAPIView):
 class ToolCategoryDetail(RetrieveUpdateDestroyAPIView):
     queryset = ToolCategory.objects.all()
     serializer_class = ToolCategorySerializers
-    permission_classes = [AllowAny]

@@ -26,7 +26,7 @@ class LogingLog(models.Model):
 
 
 class Department(models.Model):
-    title = models.CharField(max_length=50, null=True, blank=True, unique=True)
+    title = models.CharField(max_length=50, unique=True)
     is_active = models.BooleanField(default=True,)
     created_time = models.DateTimeField(auto_now_add=True,)
     user = models.ForeignKey(USER, on_delete=models.SET_NULL, null=True)
@@ -96,7 +96,7 @@ class Employee(models.Model):
 
 
 class ToolCategory(models.Model):
-    title = models.CharField(max_length=50, null=True, blank=True)
+    title = models.CharField(max_length=50, unique=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -113,7 +113,7 @@ class ToolCategory(models.Model):
 
 class Tools(models.Model):
     ToolCategory = models.ForeignKey(ToolCategory, on_delete=models.SET_NULL, null=True, verbose_name="ToolCategory_tools")
-    title = models.CharField(max_length=100, null=True, blank=True)
+    title = models.CharField(max_length=100, unique=True)
     seria_number = models.CharField(max_length=50, blank=True, unique=True)
     counting = models.IntegerField(default=0, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -183,8 +183,8 @@ class EntryExitLog(models.Model):
 
 
 class PeopleCategory(models.Model):
-    title = models.CharField(max_length=50, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
+    title = models.CharField(max_length=50, unique=True)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -201,7 +201,7 @@ class ExternalPerson(models.Model):
     category = models.ForeignKey(PeopleCategory, on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey(USER, on_delete=models.CASCADE, null=True)
     full_name = models.CharField(max_length=100, null=True, blank=True)
-    national_code = models.CharField(max_length=10, blank=True, null=True)
+    national_code = models.CharField(max_length=10, blank=True, null=True, validators=[validate_national_code])
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     compony = models.CharField(max_length=100, null=True, blank=True)
 
