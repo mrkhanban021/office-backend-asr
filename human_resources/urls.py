@@ -2,7 +2,9 @@ from django.urls import path
 from .views import (AssistanceRequestList, AssistanceRequestDetails, MonthlyAssistanceSummaryList,
                     MonthlyAssistanceSummaryDetail, BankAccountList, BankAccountDetails,
                     LeaveRequestList, LeaveRequestDetail, MonthlyLeaveSummaryList, MonthlyLeaveSummaryDetail
-                    , LeaveRequestPDFView, AllLeaveRequestsPDFView, Assistance_requestPDF, AllAssistanceRequestsPDFView)
+                    , LeaveRequestPDFView, AllLeaveRequestsPDFView, Assistance_requestPDF, AllAssistanceRequestsPDFView,
+                    ExportAssistanceExcelView, ExportMonthlyAssistanceSummaryExcelView, ExportLeaveRequestExcel, ExportMonthlyLeaveSummaryExcelView,
+                    ExportBankAccountExcelView,)
 
 app_name = "human_resources"
 
@@ -21,6 +23,11 @@ urlpatterns = [
     path('leave-request/pdf/', AllLeaveRequestsPDFView.as_view(), name='all-request-pdf'),
     path("AssistanceRequest/<int:pk>/pdf/", Assistance_requestPDF.as_view(), name='Assistance_requestPDF'),
     path("AssistanceRequest/pdf/", AllAssistanceRequestsPDFView.as_view(), name='AllAssistanceRequestsPDFView'),
+    path('export-assistance-excel/', ExportAssistanceExcelView.as_view(), name='export-assistance-excel'),
+    path('export_ExportMonthlyAssist/', ExportMonthlyAssistanceSummaryExcelView.as_view(), name='ExportMonthlyAssist'),
+    path('ExportLeaveRequestExcel/', ExportLeaveRequestExcel.as_view(), name='ExportLeaveRequestExcel'),
+    path('ExportMonthlyLeaveSummaryExcelView/', ExportMonthlyLeaveSummaryExcelView.as_view(), name='ExportMonthlyLeaveSummaryExcelView'),
+    path('ExportBankAccountExcelView/', ExportBankAccountExcelView.as_view(), name='ExportBankAccountExcelView'),
 
 ]
 

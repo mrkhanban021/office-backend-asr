@@ -92,10 +92,7 @@ class VerifyOTPView(APIView):
                 "refresh": str(refresh),
                 "access": str(refresh.access_token),
                 "user": {
-                    "id": user.id,
-                    "phone_number": user.phone_number,
-                    "role": user.role,
-                    "full_name": f"{user.profile.name} {user.profile.last_name}"
+                    "id": user.id
                 }
             }, status=status.HTTP_200_OK)
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)

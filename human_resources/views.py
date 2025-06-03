@@ -1,5 +1,4 @@
-import tempfile
-
+import jdatetime
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from weasyprint import HTML
 from .models import (AssistanceRequest, MonthlyAssistanceSummary, BankAccount, MonthlyLeaveSummary, LeaveRequest)
@@ -12,6 +11,10 @@ from rest_framework import status
 from django.template.loader import render_to_string
 from django.http import HttpResponse, FileResponse
 import tempfile
+import pandas as pd
+import decimal
+import io
+from datetime import datetime, date, time
 
 
 class AssistanceRequestList(ListCreateAPIView):
@@ -71,7 +74,6 @@ class MonthlyLeaveSummaryDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny]
 
 
-
 class LeaveRequestPDFView(APIView):
 
     def get(self, request, pk):
@@ -87,7 +89,6 @@ class LeaveRequestPDFView(APIView):
 
         result.seek(0)
         return FileResponse(result, as_attachment=True, filename=f'{leave.full_name}_leave.pdf')
-
 
 
 class AllLeaveRequestsPDFView(APIView):
@@ -107,7 +108,6 @@ class AllLeaveRequestsPDFView(APIView):
         return FileResponse(result, as_attachment=True, filename="all_leave_requests.pdf")
 
 
-
 class Assistance_requestPDF(APIView):
 
     def get(self, request, pk):
@@ -122,8 +122,7 @@ class Assistance_requestPDF(APIView):
         html.write_pdf(target=result.name)
 
         result.seek(0)
-        return FileResponse(result, as_attachment=True , filename=f"{assistance.full_name}_assistance.pdf")
-
+        return FileResponse(result, as_attachment=True, filename=f"{assistance.full_name}_assistance.pdf")
 
 
 class AllAssistanceRequestsPDFView(APIView):
@@ -133,7 +132,7 @@ class AllAssistanceRequestsPDFView(APIView):
         assistances = AssistanceRequest.objects.filter(final_approval=True).order_by('created_at')
 
         if not assistances.exists():
-            return Response({"error":"هیچ درخواست تایید شده ای یافت نشد"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "هیچ درخواست تایید شده ای یافت نشد"}, status=status.HTTP_404_NOT_FOUND)
 
         html_string = render_to_string("assistanceRequest/all_assistance_requests.html", {"assistances": assistances})
         html = HTML(string=html_string)
@@ -142,5 +141,322 @@ class AllAssistanceRequestsPDFView(APIView):
 
         result.seek(0)
         return FileResponse(result, as_attachment=True, filename="all_assistance_requests.pdf")
+
+
+class ExportAssistanceExcelView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        data = AssistanceRequest.objects.all().values(
+            'full_name',
+            'request_date',
+            'amount',
+            'loan_installment',
+            'installment_amount',
+            'total_installments',
+            'paid_installments',
+            'manager_approval',
+            'admin_approval',
+            'ceo_approval',
+            'final_approval',
+        )
+
+        df = pd.DataFrame(list(data))
+
+        # تبدیل تاریخ شمسی به استرینگ برای جلوگیری از ارور
+        if 'request_date' in df.columns:
+            df['request_date'] = df['request_date'].astype(str)
+
+        numeric_fields = ['amount', 'installment_amount', 'total_installments', 'paid_installments']
+        for field in numeric_fields:
+            if field in df.columns:
+                df[field] = df[field].apply(
+                    lambda x: float(x) if isinstance(x, (int, float, decimal.Decimal)) else None
+                )
+
+        output = io.BytesIO()
+        writer = pd.ExcelWriter(output, engine='xlsxwriter')
+        df.to_excel(writer, index=False, sheet_name='Assistance')
+
+        workbook = writer.book
+        worksheet = writer.sheets['Assistance']
+
+        header_format = workbook.add_format({
+            'bold': False,
+            'text_wrap': False,
+            'valign': 'vcenter',
+            'fg_color': '#FFFF00',
+            'border': 1
+        })
+        number_format = workbook.add_format({'num_format': '#,##0.00'})
+        cell_format = workbook.add_format({'border': 1})
+
+        for col_num, column in enumerate(df.columns):
+            worksheet.write(0, col_num, column, header_format)
+            column_len = max(df[column].astype(str).map(len).max(), len(column))
+            worksheet.set_column(col_num, col_num, column_len + 2)
+
+            # اگر ستون عددی بود، فرمت عدد بده
+            if column in numeric_fields:
+                worksheet.set_column(col_num, col_num, column_len + 2, number_format)
+
+
+
+        writer.close()
+        output.seek(0)
+
+        filename = f"assistance_requests_{datetime.now().strftime('%Y-%m-%d')}.xlsx"
+        response = HttpResponse(
+            output.read(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
+
+
+class ExportMonthlyAssistanceSummaryExcelView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        data = MonthlyAssistanceSummary.objects.all().values(
+            'full_name',
+            'year',
+            'month',
+            'total_assistance',
+            'assistance_requests_count',
+        )
+
+        df = pd.DataFrame(list(data))
+
+        numeric_fields = ['total_assistance']
+        for field in numeric_fields:
+            if field in df.columns:
+                df[field] = df[field].apply(
+                    lambda x: float(x) if isinstance(x, (int, float, decimal.Decimal)) else None
+                )
+
+        output = io.BytesIO()
+        writer = pd.ExcelWriter(output, engine="xlsxwriter")
+        df.to_excel(writer, index=False, sheet_name="MonthlyAssist")
+
+        workbook = writer.book
+        worksheet = writer.sheets['MonthlyAssist']
+
+        header_format = workbook.add_format({
+            'bold': False,
+            'text_wrap': False,
+            'valign': 'vcenter',
+            'fg_color': '#FFFF00',
+            'border': 1
+        })
+
+        number_format = workbook.add_format({'num_format': '#,##0.00'})
+        cell_format = workbook.add_format({'border': 1})
+
+        for col_num, column in enumerate(df.columns):
+            worksheet.write(0, col_num, column, header_format)
+            column_len = max(df[column].astype(str).map(len).max(), len(column))
+            worksheet.set_column(col_num, col_num, column_len + 2)
+
+            if column in numeric_fields:
+                worksheet.set_column(col_num, col_num, column_len + 2, number_format)
+
+        for row_num, row_data in enumerate(df.values, start=1):
+            for col_num, cell_value in enumerate(row_data):
+                worksheet.write(row_num, col_num, cell_value, cell_format)
+
+        writer.close()
+        output.seek(0)
+
+        filename = f"monthly_summary_{datetime.now().strftime('%Y-%m-%d')}.xlsx"
+        response = HttpResponse(
+            output.read(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
+
+
+
+class ExportLeaveRequestExcel(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        data = LeaveRequest.objects.all().values(
+            'full_name',
+            'request_date',
+            'leave_type',
+            'duration_type',
+            'hourly_date',
+            'time_from',
+            'time_to',
+            'start_date',
+            'end_date',
+        )
+
+        df = pd.DataFrame(list(data))
+
+        # تابع تبدیل همه تاریخ‌ها و زمان‌ها به رشته قابل فهم برای اکسل
+        def convert_to_string(val):
+            if isinstance(val, (datetime, date)):
+                return val.strftime('%Y-%m-%d')
+            if isinstance(val, jdatetime.date):
+                return val.strftime('%Y-%m-%d')
+            if isinstance(val, time):
+                return val.strftime('%H:%M')
+            return ""
+
+        date_fields = ['request_date', 'hourly_date', 'start_date', 'end_date', 'time_from', 'time_to']
+        for field in date_fields:
+            if field in df.columns:
+                df[field] = df[field].apply(convert_to_string)
+
+        output = io.BytesIO()
+        writer = pd.ExcelWriter(output, engine="xlsxwriter")
+        df.to_excel(writer, index=False, sheet_name="LeaveRequests")
+
+        workbook = writer.book
+        worksheet = writer.sheets['LeaveRequests']
+
+        header_format = workbook.add_format({
+            'bold': True,
+            'text_wrap': True,
+            'valign': 'vcenter',
+            'fg_color': '#FFFF00',
+            'border': 1
+        })
+
+        cell_format = workbook.add_format({'border': 1})
+
+        for col_num, column in enumerate(df.columns):
+            worksheet.write(0, col_num, column, header_format)
+            column_len = max(df[column].astype(str).map(len).max(), len(column))
+            worksheet.set_column(col_num, col_num, column_len + 2)
+
+        for row_num, row_data in enumerate(df.values, start=1):
+            for col_num, cell_value in enumerate(row_data):
+                worksheet.write(row_num, col_num, cell_value, cell_format)
+
+        writer.close()
+        output.seek(0)
+
+        filename = f"leave_requests_{datetime.now().strftime('%Y-%m-%d')}.xlsx"
+        response = HttpResponse(
+            output.read(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
+
+
+
+class ExportMonthlyLeaveSummaryExcelView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        data = MonthlyLeaveSummary.objects.all().values(
+            'full_name',
+            'year',
+            'month',
+            'total_leave',
+            'leave_requests_count',
+        )
+
+        df = pd.DataFrame(list(data))
+
+        # اطمینان از اینکه total_leave عددی است
+        numeric_fields = ['total_leave']
+        for field in numeric_fields:
+            if field in df.columns:
+                df[field] = df[field].apply(
+                    lambda x: float(x) if isinstance(x, (int, float, decimal.Decimal)) else None
+                )
+
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+            df.to_excel(writer, index=False, sheet_name="MonthlyLeave")
+
+            workbook = writer.book
+            worksheet = writer.sheets['MonthlyLeave']
+
+            header_format = workbook.add_format({
+                'bold': False,
+                'text_wrap': False,
+                'valign': 'vcenter',
+                'fg_color': '#FFFF00',
+                'border': 1
+            })
+
+            number_format = workbook.add_format({'num_format': '#,##0.00'})  # نمایش اعشار
+
+            for col_num, column in enumerate(df.columns):
+                worksheet.write(0, col_num, column, header_format)
+
+                column_len = max(df[column].astype(str).map(len).max(), len(column))
+                worksheet.set_column(col_num, col_num, column_len + 2)
+
+                if column in numeric_fields:
+                    worksheet.set_column(col_num, col_num, None, number_format)
+
+            # worksheet.autofilter(0, 0, len(df), len(df.columns) - 1)
+
+        output.seek(0)
+        filename = "monthly_leave_summary.xlsx"
+        response = HttpResponse(
+            output,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
+
+
+class ExportBankAccountExcelView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        data = BankAccount.objects.all().values(
+            'full_name',
+            'title',
+            'account_number',
+            'card_number',
+            'sheba_number',
+            'is_active',
+        )
+
+        df = pd.DataFrame(list(data))
+
+        # تبدیل بولین به متن برای خوانایی بیشتر
+        df['is_active'] = df['is_active'].apply(lambda x: 'فعال' if x else 'غیرفعال')
+
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+            df.to_excel(writer, index=False, sheet_name="BankAccounts")
+
+            workbook = writer.book
+            worksheet = writer.sheets['BankAccounts']
+
+            header_format = workbook.add_format({
+                'bold': True,
+                'text_wrap': False,
+                'valign': 'vcenter',
+                'fg_color': '#FFFF00',
+                'border': 1
+            })
+
+            for col_num, column in enumerate(df.columns):
+                worksheet.write(0, col_num, column, header_format)
+                column_len = max(df[column].astype(str).map(len).max(), len(column))
+                worksheet.set_column(col_num, col_num, column_len + 2)
+
+            # worksheet.autofilter(0, 0, len(df), len(df.columns) - 1)
+
+        output.seek(0)
+        filename = "bank_accounts.xlsx"
+        response = HttpResponse(
+            output,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
 
 
