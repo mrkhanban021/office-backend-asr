@@ -7,8 +7,7 @@ from rest_framework.views import APIView
 from django.http import HttpResponse
 import pandas as pd
 import io
-from datetime import datetime, date, time
-import decimal
+
 
 
 class ToolsApiList(ListCreateAPIView):
@@ -228,7 +227,7 @@ class ExportToolsExcel(APIView):
             worksheet = writer.sheets['Tools']
 
             header_format = workbook.add_format({
-                'bold': True,
+                'bold': False,
                 'text_wrap': True,
                 'valign': 'center',
                 'fg_color': '#FFFF00',

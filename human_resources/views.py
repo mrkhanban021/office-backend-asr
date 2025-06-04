@@ -163,9 +163,9 @@ class ExportAssistanceExcelView(APIView):
 
         df = pd.DataFrame(list(data))
 
-        # تبدیل تاریخ شمسی به استرینگ برای جلوگیری از ارور
+
         if 'request_date' in df.columns:
-            df['request_date'] = df['request_date'].astype(str)
+            df['request_date'] = df['request_date'].apply(lambda x: str(x) if x else '')
 
         numeric_fields = ['amount', 'installment_amount', 'total_installments', 'paid_installments']
         for field in numeric_fields:
@@ -173,6 +173,20 @@ class ExportAssistanceExcelView(APIView):
                 df[field] = df[field].apply(
                     lambda x: float(x) if isinstance(x, (int, float, decimal.Decimal)) else None
                 )
+
+        df.rename(columns={
+            'full_name': 'نام کامل',
+            'request_date': 'تاریخ درخواست',
+            'amount': 'مقدار',
+            'loan_installment': 'اقساط وام',
+            'installment_amount': 'مبلغ هر قسط',
+            'total_installments': 'کل اقساط',
+            'paid_installments': 'اقساط پرداخت شده',
+            'manager_approval': 'تایید مدیر',
+            'admin_approval': 'تایید ادمین',
+            'ceo_approval': 'تایید مدیرعامل',
+            'final_approval': 'تایید نهایی',
+        }, inplace=True)
 
         output = io.BytesIO()
         writer = pd.ExcelWriter(output, engine='xlsxwriter')
@@ -235,6 +249,14 @@ class ExportMonthlyAssistanceSummaryExcelView(APIView):
                     lambda x: float(x) if isinstance(x, (int, float, decimal.Decimal)) else None
                 )
 
+        df.rename(columns={
+            'full_name': 'نام کامل',
+            'year': 'سال',
+            'month': 'ماه',
+            'total_assistance': 'جمع کل',
+            'assistance_requests_count': 'تعداد درخواست‌ها',
+        }, inplace=True)
+
         output = io.BytesIO()
         writer = pd.ExcelWriter(output, engine="xlsxwriter")
         df.to_excel(writer, index=False, sheet_name="MonthlyAssist")
@@ -282,17 +304,21 @@ class ExportLeaveRequestExcel(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        data = LeaveRequest.objects.all().values(
-            'full_name',
-            'request_date',
-            'leave_type',
-            'duration_type',
-            'hourly_date',
-            'time_from',
-            'time_to',
-            'start_date',
-            'end_date',
-        )
+        leave_requests = LeaveRequest.objects.all()
+
+        data = []
+        for leave in leave_requests:
+            data.append({
+                'نام کامل': leave.full_name,
+                'تاریخ درخواست': str(leave.request_date) if leave.request_date else '',
+                'نوع مرخصی': leave.get_leave_type_display() if leave.leave_type else '',
+                'نوع مدت': leave.get_duration_type_display() if leave.duration_type else '',
+                'تاریخ ساعتی': str(leave.hourly_date) if leave.hourly_date else '',
+                'از ساعت': str(leave.time_from) if leave.time_from else '',
+                'تا ساعت': str(leave.time_to) if leave.time_to else '',
+                'تاریخ شروع': str(leave.start_date) if leave.start_date else '',
+                'تاریخ پایان': str(leave.end_date) if leave.end_date else '',
+            })
 
         df = pd.DataFrame(list(data))
 
@@ -310,6 +336,18 @@ class ExportLeaveRequestExcel(APIView):
         for field in date_fields:
             if field in df.columns:
                 df[field] = df[field].apply(convert_to_string)
+
+        df.rename(columns={
+            'full_name': 'نام کامل',
+            'request_date': 'تاریخ درخواست',
+            'leave_type': 'نوع مرخصی',
+            'duration_type': 'نوع مدت',
+            'hourly_date': 'تاریخ ساعتی',
+            'time_from': 'از ساعت',
+            'time_to': 'تا ساعت',
+            'start_date': 'تاریخ شروع',
+            'end_date': 'تاریخ پایان',
+        }, inplace=True)
 
         output = io.BytesIO()
         writer = pd.ExcelWriter(output, engine="xlsxwriter")
@@ -371,6 +409,13 @@ class ExportMonthlyLeaveSummaryExcelView(APIView):
                 df[field] = df[field].apply(
                     lambda x: float(x) if isinstance(x, (int, float, decimal.Decimal)) else None
                 )
+        df.rename(columns={
+            'full_name': 'نام کامل',
+            'year': 'سال',
+            'month': 'ماه',
+            'total_leave': 'مجموع مرخصی (ساعت)',
+            'leave_requests_count': 'تعداد درخواست‌ها',
+        }, inplace=True)
 
         output = io.BytesIO()
         with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
@@ -425,8 +470,17 @@ class ExportBankAccountExcelView(APIView):
 
         df = pd.DataFrame(list(data))
 
-        # تبدیل بولین به متن برای خوانایی بیشتر
         df['is_active'] = df['is_active'].apply(lambda x: 'فعال' if x else 'غیرفعال')
+
+
+        df.rename(columns={
+            'full_name': 'نام و نام خانوادگی',
+            'title': "نام بانک",
+            'account_number': 'شماره حساب' ,
+            'card_number': 'شماره کارت',
+            'sheba_number': 'شماره شبا',
+            'is_active': 'وضعیت حساب'
+        },inplace=True)
 
         output = io.BytesIO()
         with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
@@ -436,7 +490,7 @@ class ExportBankAccountExcelView(APIView):
             worksheet = writer.sheets['BankAccounts']
 
             header_format = workbook.add_format({
-                'bold': True,
+                'bold': False,
                 'text_wrap': False,
                 'valign': 'vcenter',
                 'fg_color': '#FFFF00',
