@@ -35,37 +35,31 @@ class MonthlyAssistanceSummaryList(ListCreateAPIView):
 class MonthlyAssistanceSummaryDetail(RetrieveUpdateDestroyAPIView):
     queryset = MonthlyAssistanceSummary.objects.all()
     serializer_class = MonthlyAssistanceSummarySerializers
-    permission_classes = [AllowAny]
 
 
 class BankAccountList(ListCreateAPIView):
     queryset = BankAccount.objects.all()
     serializer_class = BankAccountSerializers
-    permission_classes = [AllowAny]
 
 
 class BankAccountDetails(RetrieveUpdateDestroyAPIView):
     queryset = BankAccount.objects.all()
     serializer_class = BankAccountSerializers
-    permission_classes = [AllowAny]
 
 
 class LeaveRequestList(ListCreateAPIView):
     queryset = LeaveRequest.objects.all()
     serializer_class = LeaveRequestSerializers
-    permission_classes = [AllowAny]
 
 
 class LeaveRequestDetail(RetrieveUpdateDestroyAPIView):
     queryset = LeaveRequest.objects.all()
     serializer_class = LeaveRequestSerializers
-    permission_classes = [AllowAny]
 
 
 class MonthlyLeaveSummaryList(ListCreateAPIView):
     queryset = MonthlyLeaveSummary.objects.all()
     serializer_class = MonthlyLeaveSummarySerializers
-    permission_classes = [AllowAny]
 
 
 class MonthlyLeaveSummaryDetail(RetrieveUpdateDestroyAPIView):
@@ -126,7 +120,6 @@ class Assistance_requestPDF(APIView):
 
 
 class AllAssistanceRequestsPDFView(APIView):
-    permission_classes = [AllowAny]
 
     def get(self, request):
         assistances = AssistanceRequest.objects.filter(final_approval=True).order_by('created_at')
@@ -144,7 +137,6 @@ class AllAssistanceRequestsPDFView(APIView):
 
 
 class ExportAssistanceExcelView(APIView):
-    permission_classes = [AllowAny]
 
     def get(self, request):
         data = AssistanceRequest.objects.all().values(
@@ -229,7 +221,6 @@ class ExportAssistanceExcelView(APIView):
 
 
 class ExportMonthlyAssistanceSummaryExcelView(APIView):
-    permission_classes = [AllowAny]
 
     def get(self, request):
         data = MonthlyAssistanceSummary.objects.all().values(
@@ -301,7 +292,6 @@ class ExportMonthlyAssistanceSummaryExcelView(APIView):
 
 
 class ExportLeaveRequestExcel(APIView):
-    permission_classes = [AllowAny]
 
     def get(self, request):
         leave_requests = LeaveRequest.objects.all()
@@ -389,7 +379,6 @@ class ExportLeaveRequestExcel(APIView):
 
 
 class ExportMonthlyLeaveSummaryExcelView(APIView):
-    permission_classes = [AllowAny]
 
     def get(self, request):
         data = MonthlyLeaveSummary.objects.all().values(
@@ -456,7 +445,6 @@ class ExportMonthlyLeaveSummaryExcelView(APIView):
 
 
 class ExportBankAccountExcelView(APIView):
-    permission_classes = [AllowAny]
 
     def get(self, request):
         data = BankAccount.objects.all().values(

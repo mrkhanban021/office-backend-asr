@@ -37,7 +37,6 @@ class ToolTransferLogList(ListCreateAPIView):
 class ToolTransferLogDetail(RetrieveUpdateDestroyAPIView):
     queryset = ToolTransferLog.objects.all()
     serializer_class = ToolTransferLogSerializers
-    permission_classes = (AllowAny,)
 
 
 class EmployeeList(ListCreateAPIView):
@@ -52,7 +51,6 @@ class EmployeeList(ListCreateAPIView):
 class EmployeeListDetail(RetrieveUpdateDestroyAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializers
-    permission_classes = (AllowAny,)
 
 
 class PeopleCategoryList(ListCreateAPIView):
@@ -121,7 +119,6 @@ class ToolCategoryDetail(RetrieveUpdateDestroyAPIView):
 
 
 class ExportEmployeeList(APIView):
-    permission_classes = [AllowAny]
 
     def get(self, request):
         data = Employee.objects.all().values(
@@ -194,7 +191,6 @@ class ExportEmployeeList(APIView):
 
 
 class ExportToolsExcel(APIView):
-    permission_classes = [AllowAny]
 
     def get(self, request):
         # دریافت اطلاعات از مدل Tools
@@ -251,7 +247,6 @@ class ExportToolsExcel(APIView):
 
 
 class ExportToolTransferLog(APIView):
-    permission_classes = [AllowAny]
 
     def get(self, request):
         data = ToolTransferLog.objects.all().values(
@@ -311,7 +306,6 @@ class ExportToolTransferLog(APIView):
 
 
 class ExportEntryExitLog(APIView):
-    permission_classes = [AllowAny]
 
     def format_jdatetime_or_time(self, x):
         import jdatetime
@@ -384,7 +378,6 @@ class ExportEntryExitLog(APIView):
 
 
 class ExportExternalPerson(APIView):
-    permission_classes = [AllowAny]
 
 
     def format_jdate(self, x):
