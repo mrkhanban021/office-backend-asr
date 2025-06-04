@@ -2,7 +2,8 @@ from django.urls import path
 from .views import (ToolsApiList, ToolsApiListDetail, EmployeeList, EmployeeListDetail,
                     ToolTransferLogList, ToolTransferLogDetail, PeopleCategoryList, PeopleCategoryDetail,
                     ExternalPersonList, ExternalPersonDetail, EntryExitLogList, EntryExitLogDetail, DepartmentList, DepartmentDetail,
-                    ToolCategoryList, ToolCategoryDetail)
+                    ToolCategoryList, ToolCategoryDetail, ExportEmployeeList, ExportToolsExcel, ExportToolTransferLog, ExportEntryExitLog,
+                    ExportExternalPerson,)
 app_name = "worklog"
 
 urlpatterns = [
@@ -22,5 +23,10 @@ urlpatterns = [
     path("department/<int:pk>", DepartmentDetail.as_view()),
     path("toolcategory/", ToolCategoryList.as_view()),
     path("toolcategory/<int:pk>", ToolCategoryDetail.as_view()),
+    path("ExportEmployeeList/", ExportEmployeeList.as_view()),
+    path("ExportToolsExcel/", ExportToolsExcel.as_view()),
+    path("ExportToolTransferLog/", ExportToolTransferLog.as_view()),
+    path("ExportEntryExitLog/", ExportEntryExitLog.as_view()),
+    path("ExportExternalPerson/", ExportExternalPerson.as_view()),
 
 ]

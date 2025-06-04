@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from django_jalali.db import models as jmodels
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.utils import timezone
 from django.utils.text import slugify
 
 USER = get_user_model()
