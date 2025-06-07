@@ -1,0 +1,141 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>فرم ثبت ورود بازدیدکننده</title>
+  <style>
+    @font-face {
+      font-family: "Vazir";
+      src: url("{{ STATIC_URL }}fonts/Vazirmatn-Regular.woff2") format("woff2"),
+           url("{{ STATIC_URL }}fonts/Vazirmatn-Regular.ttf") format("truetype");
+    }
+    @page {
+      size: A4;
+      margin: 0.5cm;
+        border: 1px solid #ccc;
+
+
+    }
+    body {
+      font-family: Vazir, Tahoma, sans-serif;
+      direction: rtl;
+      background: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 30px;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 4px solid #007bff;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    .logo img {
+      width: 100px;
+    }
+    .form-date {
+      font-weight: bold;
+      font-size: 14px;
+        direction: rtl;
+    }
+    h2 {
+      text-align: center;
+      margin: 20px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 40px;
+    }
+    td {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    td.title {
+      background: #f0f0f0;
+      font-weight: bold;
+      width: 30%;
+    }
+    .signature {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 120px;
+      font-size: 14px;
+    }
+    .signature div {
+      width: 30%;
+      border-top: 1px solid #999;
+      text-align: center;
+      padding-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- هدر فرم با لوگو و تاریخ -->
+    <div class="header">
+      <div class="form-date">
+        تاریخ ثبت فرم: {{ data.centered_at|date:"d-m-Y"}}
+      </div>
+      <div class="logo">
+        <img src="https://asr-elevator.ir/wp-content/uploads/2025/05/logo.jpg" alt="logo">
+      </div>
+    </div>
+
+    <h2>فرم ثبت ورود بازدیدکننده</h2>
+
+    <table>
+      <tr>
+        <td class="title">نام و نام خانوادگی</td>
+        <td>{{ data.full_name|default:"-" }}</td>
+      </tr>
+      <tr>
+        <td class="title">کد ملی</td>
+        <td>{{ data.national_code|default:"-" }}</td>
+      </tr>
+      <tr>
+        <td class="title">شماره تماس</td>
+        <td>{{ data.phone_number|default:"-" }}</td>
+      </tr>
+      <tr>
+        <td class="title">شرکت / سازمان</td>
+        <td>{{ data.compony|default:"-" }}</td>
+      </tr>
+      <tr>
+        <td class="title">دسته‌بندی فرد</td>
+        <td>{{ data.category.title|default:"-" }}</td>
+      </tr>
+      <tr>
+        <td class="title">زمان ورود</td>
+        <td>{{ data.centered_at|default:"-"|date:"Y-m-d H:i" }}</td>
+      </tr>
+      <tr>
+        <td class="title">زمان خروج</td>
+        <td>{{ data.exit|default:"-"|date:"H:i" }}</td>
+      </tr>
+        <tr>
+        <td class="title">ثبت کننده</td>
+        <td>{{ data.user.profile.name|default:"-" }} {{ data.user.profile.last_name|default:"-" }}</td>
+      </tr>
+      <tr>
+        <td class="title">توضیحات</td>
+        <td>{{ data.notex|default:"-" }}</td>
+      </tr>
+    </table>
+
+    <div class="signature">
+      <div>امضا نگهبان</div>
+      <div>امضا بازدیدکننده</div>
+    </div>
+  </div>
+</body>
+</html>

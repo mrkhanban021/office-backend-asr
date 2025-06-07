@@ -3,7 +3,7 @@ from .views import (ToolsApiList, ToolsApiListDetail, EmployeeList, EmployeeList
                     ToolTransferLogList, ToolTransferLogDetail, PeopleCategoryList, PeopleCategoryDetail,
                     ExternalPersonList, ExternalPersonDetail, EntryExitLogList, EntryExitLogDetail, DepartmentList, DepartmentDetail,
                     ToolCategoryList, ToolCategoryDetail, ExportEmployeeList, ExportToolsExcel, ExportToolTransferLog, ExportEntryExitLog,
-                    ExportExternalPerson,)
+                    ExportExternalPerson, EnttryexitLogToPDF, ToolTransferLogToPDF, ExternalPersonPDF)
 app_name = "worklog"
 
 urlpatterns = [
@@ -28,5 +28,8 @@ urlpatterns = [
     path("ExportToolTransferLog/", ExportToolTransferLog.as_view()),
     path("ExportEntryExitLog/", ExportEntryExitLog.as_view()),
     path("ExportExternalPerson/", ExportExternalPerson.as_view()),
+    path("EnttryexitLogToPDF/<int:pk>/pdf", EnttryexitLogToPDF.as_view()),
+    path("ToolTransferLogToPDF/<int:pk>/pdf", ToolTransferLogToPDF.as_view()),
+    path("ExternalPersonPDF/<int:pk>/pdf", ExternalPersonPDF.as_view()),
 
 ]

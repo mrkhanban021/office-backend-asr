@@ -1,0 +1,123 @@
+{% load static %}
+{% load humanize %}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>فرم ورود و خروج</title>
+  <style>
+    @font-face {
+      font-family: "Vazir";
+      src: url("{% static 'fonts/Vazirmatn-Regular.woff2' %}") format("woff2"),
+           url("{% static 'fonts/Vazirmatn-Regular.ttf' %}") format("truetype");
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @page {
+      size: a5 landscape  ;
+      margin: 0.5cm;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Vazir, Tahoma, sans-serif;
+      direction: rtl;
+    }
+
+    .container {
+      max-width: 793px;
+      background: #fff;
+      padding: 30px;
+
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 4px solid #007bff;
+      padding-bottom: 10px;
+    }
+
+    .logo img {
+      width: 100px;
+    }
+
+    .title {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin: 30px 0 20px;
+      border-bottom: 2px dashed #bbb;
+      padding-bottom: 10px;
+    }
+
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .info-table td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      vertical-align: top;
+    }
+
+    .info-table td:first-child {
+      font-weight: bold;
+      width: 30%;
+      background: #f0f0f0;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="date">تاریخ ثبت: <span>{{ data.exit_time|date:"Y-m-d - H:i" }}</span></div>
+      <div class="logo">
+        <img src="https://asr-elevator.ir/wp-content/uploads/2025/05/logo.jpg" alt="logo">
+      </div>
+    </div>
+
+    <div class="title">فرم ثبت ورود و خروج</div>
+
+    <table class="info-table">
+      <tr>
+        <td>نام و نام خانوادگی</td>
+        <td>{{ data.employee.first_name }} {{ data.employee.last_name }}</td>
+      </tr>
+        <tr>
+        <td>ساعت خروج</td>
+        <td>{{ data.exit_time|time:"H:i" }}</td>
+      </tr>
+      <tr>
+        <td>ساعت ورود</td>
+        <td>{% if data.entry_time %}{{ data.entry_time|time:"H:i" }}{% else %}-{% endif %}</td>
+      </tr>
+          <tr>
+        <td>ثبت کننده</td>
+        <td>{{ data.reason|default:"-" }}</td>
+      </tr>
+      <tr>
+        <td>علت</td>
+        <td>{{ data.reason|default:"-" }}</td>
+      </tr>
+    </table>
+
+    <div class="footer">
+      <p>امضای مسئول مربوطه:</p>
+      <br><br><br>
+      <p>...........................................................</p>
+    </div>
+  </div>
+</body>
+</html>

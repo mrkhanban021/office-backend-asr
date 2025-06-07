@@ -1,10 +1,15 @@
+import tempfile
+from rest_framework.response import Response
+from  rest_framework import status
 from .serializers import (ToolsSerializers, EmployeeSerializers, ToolTransferLogSerializers, PeopleCategorySerializers,
                           ExternalPersonSerializers, EntryExitLogSerializers, DepartmentSerializers, ToolCategorySerializers)
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from .models import (Tools, Employee, ToolTransferLog, PeopleCategory, ExternalPerson, EntryExitLog, Department, ToolCategory)
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
+from weasyprint import HTML
+from django.template.loader import render_to_string
 import pandas as pd
 import io
 
@@ -453,5 +458,58 @@ class ExportExternalPerson(APIView):
             headers={'Content-Disposition': 'attachment; filename="external_persons.xlsx"'}
         )
 
+
+class EnttryexitLogToPDF(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, pk):
+        try:
+            data = EntryExitLog.objects.get(pk=pk)
+        except EntryExitLog.DoesNotExist:
+            return Response({'error': 'کاربری یافت نشد'},status=status.HTTP_404_NOT_FOUND )
+
+        html_string = render_to_string("EnttryexitLog/EnttryexitLogToPDF.html", {"data": data})
+        html = HTML(string=html_string)
+        result = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+        html.write_pdf(target=result.name)
+
+        result.seek(0)
+        return FileResponse(result, as_attachment=True, filename=f'{data.employee.first_name} {data.employee.last_name}.pdf')
+
+
+
+class ToolTransferLogToPDF(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+        try:
+            data = ToolTransferLog.objects.get(pk=pk)
+        except EntryExitLog.DoesNotExist:
+            return Response({'error': 'کاربری یافت نشد'},status=status.HTTP_404_NOT_FOUND )
+
+        html_string = render_to_string("EnttryexitLog/ToolTransferLog.html", {"data": data})
+        html = HTML(string=html_string)
+        result = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+        html.write_pdf(target=result.name)
+
+        result.seek(0)
+        return FileResponse(result, as_attachment=True, filename=f'{data.employee.first_name} {data.employee.last_name}.pdf')
+
+
+class ExternalPersonPDF(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+        try:
+            data = ExternalPerson.objects.get(pk=pk)
+        except EntryExitLog.DoesNotExist:
+            return Response({'error': 'کاربری یافت نشد'},status=status.HTTP_404_NOT_FOUND )
+
+        html_string = render_to_string("EnttryexitLog/visitor_entry.html", {"data": data})
+        html = HTML(string=html_string)
+        result = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+        html.write_pdf(target=result.name)
+
+        result.seek(0)
+        return FileResponse(result, as_attachment=True, filename=f'{data.full_name} {data.compony}.pdf')
 
 
