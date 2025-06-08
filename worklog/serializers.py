@@ -90,13 +90,13 @@ class PeopleCategorySerializers(serializers.ModelSerializer):
 
 
 class ExternalPersonSerializers(serializers.ModelSerializer):
-    centered_at = JDateTimeField(required=False, allow_null=True)
+    created_at = JDateTimeField(required=False, allow_null=True)
 
     class Meta:
         model = ExternalPerson
-        fields = ("id", "full_name", "national_code", "phone_number", "compony", "notex", "centered_at", "exit",
+        fields = ("id", "full_name", "national_code", "phone_number", "compony", "notex", "created_at", "exit",
                   "user",  "category")
-        read_only_fields = ("centered_at",)
+        read_only_fields = ("created_at",)
 
 
 class EntryExitLogSerializers(serializers.ModelSerializer):

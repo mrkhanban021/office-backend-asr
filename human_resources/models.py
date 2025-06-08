@@ -109,6 +109,7 @@ class MonthlyAssistanceSummary(models.Model):
 class BankAccount(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True)
     full_name = models.CharField(null=True, blank=True, max_length=100)
+    name_account_holder = models.CharField(max_length=50, null=True, blank=True)
     title = models.CharField(max_length=20, null=True, blank=True)
     account_number = models.CharField(max_length=30, unique=True)
     card_number = models.CharField(max_length=30, unique=True)

@@ -109,14 +109,14 @@ class PeopleCategoryAdmin(admin.ModelAdmin):
 class ExternalPersonAdmin(admin.ModelAdmin):
     list_display = ('id', "full_name", "national_code", "phone_number", "compony", "category")
     list_display_links = ("id", "full_name")
-    list_filter = ("category", "centered_at")
+    list_filter = ("category", "created_at")
     search_fields = ("full_name", "national_code", "phone_number")
-    readonly_fields = ("centered_at", )
+    readonly_fields = ("created_at", )
     list_per_page = 13
 
     fieldsets = (
         ("information", {
-            "fields": ("category", "full_name", "national_code", "phone_number", "compony", "centered_at", "exit", "notex", "user")
+            "fields": ("category", "full_name", "national_code", "phone_number", "compony", "created_at", "exit", "notex", "user")
         }),
     )
 

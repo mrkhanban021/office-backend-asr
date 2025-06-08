@@ -204,14 +204,14 @@ class ExternalPerson(models.Model):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     compony = models.CharField(max_length=100, null=True, blank=True)
 
-    centered_at = jmodels.jDateTimeField(auto_now_add=True)
+    created_at = jmodels.jDateTimeField(auto_now_add=True)
     exit = models.TimeField(null=True, blank=True)
     notex = models.TextField(blank=True, null=True)
 
     class Meta:
         verbose_name = "ExternalPerson"
         verbose_name_plural = "ExternalPerson"
-        ordering = ("-centered_at",)
+        ordering = ("-created_at",)
 
     def __str__(self):
         return self.full_name
