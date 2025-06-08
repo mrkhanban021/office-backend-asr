@@ -105,7 +105,7 @@
       </tr>
           <tr>
         <td>ثبت کننده</td>
-        <td>{{ data.reason|default:"-" }}</td>
+        <td>{{ data.user.profile.name|default:"-" }} {{ data.user.profile.last_name|default:"-" }}</td>
       </tr>
       <tr>
         <td>علت</td>

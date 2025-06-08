@@ -461,11 +461,12 @@ class ExportExternalPerson(APIView):
 
 class EnttryexitLogToPDF(APIView):
     permission_classes = [AllowAny]
+
     def get(self, request, pk):
         try:
             data = EntryExitLog.objects.get(pk=pk)
         except EntryExitLog.DoesNotExist:
-            return Response({'error': 'کاربری یافت نشد'},status=status.HTTP_404_NOT_FOUND )
+            return Response({'error': 'کاربری یافت نشد'}, status=status.HTTP_404_NOT_FOUND )
 
         html_string = render_to_string("EnttryexitLog/EnttryexitLogToPDF.html", {"data": data})
         html = HTML(string=html_string)
