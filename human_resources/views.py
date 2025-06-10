@@ -4,7 +4,6 @@ from weasyprint import HTML
 from .models import (AssistanceRequest, MonthlyAssistanceSummary, BankAccount, MonthlyLeaveSummary, LeaveRequest)
 from .serializers import (AssistanceRequestSerializers, MonthlyAssistanceSummarySerializers, BankAccountSerializers,
                           LeaveRequestSerializers, MonthlyLeaveSummarySerializers)
-from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,11 +14,18 @@ import pandas as pd
 import decimal
 import io
 from datetime import datetime, date, time
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 
 class AssistanceRequestList(ListCreateAPIView):
     queryset = AssistanceRequest.objects.all()
     serializer_class = AssistanceRequestSerializers
+
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['final_approval', 'loan_installment']
+    search_fields = ['full_name']
+    ordering_fields = ['full_name', 'request_date', 'ceo_comment']
 
 
 class AssistanceRequestDetails(RetrieveUpdateDestroyAPIView):
@@ -32,6 +38,8 @@ class MonthlyAssistanceSummaryList(ListCreateAPIView):
     serializer_class = MonthlyAssistanceSummarySerializers
 
 
+
+
 class MonthlyAssistanceSummaryDetail(RetrieveUpdateDestroyAPIView):
     queryset = MonthlyAssistanceSummary.objects.all()
     serializer_class = MonthlyAssistanceSummarySerializers
@@ -40,6 +48,16 @@ class MonthlyAssistanceSummaryDetail(RetrieveUpdateDestroyAPIView):
 class BankAccountList(ListCreateAPIView):
     queryset = BankAccount.objects.all()
     serializer_class = BankAccountSerializers
+
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+
+    filterset_fields = ['is_active', 'title']
+
+    search_fields = ['full_name', 'account_number', 'card_number', 'sheba_number', 'title']
+
+    ordering_fields = ['created_at', 'title', 'full_name']
+    ordering = ['-created_at']
+
 
 
 class BankAccountDetails(RetrieveUpdateDestroyAPIView):
@@ -50,6 +68,15 @@ class BankAccountDetails(RetrieveUpdateDestroyAPIView):
 class LeaveRequestList(ListCreateAPIView):
     queryset = LeaveRequest.objects.all()
     serializer_class = LeaveRequestSerializers
+
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+
+    filterset_fields = ['ceo_approval', 'request_date']
+
+    search_fields = ['full_name']
+
+    ordering_fields = ['created_at', 'full_name']
+    ordering = ['-created_at']
 
 
 class LeaveRequestDetail(RetrieveUpdateDestroyAPIView):
@@ -65,7 +92,6 @@ class MonthlyLeaveSummaryList(ListCreateAPIView):
 class MonthlyLeaveSummaryDetail(RetrieveUpdateDestroyAPIView):
     queryset = MonthlyLeaveSummary.objects.all()
     serializer_class = MonthlyLeaveSummarySerializers
-    permission_classes = [AllowAny]
 
 
 class LeaveRequestPDFView(APIView):

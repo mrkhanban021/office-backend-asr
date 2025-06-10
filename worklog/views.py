@@ -1,6 +1,8 @@
 import tempfile
 from rest_framework.response import Response
-from  rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework import status
 from .serializers import (ToolsSerializers, EmployeeSerializers, ToolTransferLogSerializers, PeopleCategorySerializers,
                           ExternalPersonSerializers, EntryExitLogSerializers, DepartmentSerializers, ToolCategorySerializers)
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
@@ -18,7 +20,10 @@ import io
 class ToolsApiList(ListCreateAPIView):
     queryset = Tools.objects.all()
     serializer_class = ToolsSerializers
-    permission_classes = [AllowAny]
+
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+
+    search_fields = ['title', 'seria_number']
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -33,7 +38,10 @@ class ToolsApiListDetail(RetrieveUpdateDestroyAPIView):
 class ToolTransferLogList(ListCreateAPIView):
     queryset = ToolTransferLog.objects.all()
     serializer_class = ToolTransferLogSerializers
-    permission_classes = [AllowAny]
+
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+
+    search_fields = ['tool__title', 'employee__first_name', 'employee__last_name']
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -47,10 +55,16 @@ class ToolTransferLogDetail(RetrieveUpdateDestroyAPIView):
 class EmployeeList(ListCreateAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializers
-    permission_classes = [AllowAny]
+
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['is_active']
+    search_fields = ['department__title', 'last_name', 'first_name', 'phone_number', 'id_code']
+    ordering_fields = ['created_at', 'first_name', 'phone_number']
+    ordering = ['-created_at']
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
 
 
 class EmployeeListDetail(RetrieveUpdateDestroyAPIView):
@@ -72,6 +86,10 @@ class ExternalPersonList(ListCreateAPIView):
     queryset = ExternalPerson.objects.all()
     serializer_class = ExternalPersonSerializers
 
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+
+    search_fields = ['user__profile__name', 'user__profile__last_name', 'full_name', 'national_code', 'phone_number']
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
@@ -84,6 +102,10 @@ class ExternalPersonDetail(RetrieveUpdateDestroyAPIView):
 class EntryExitLogList(ListCreateAPIView):
     queryset = EntryExitLog.objects.all()
     serializer_class = EntryExitLogSerializers
+
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ['employee__first_name', 'employee__last_name']
+
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
